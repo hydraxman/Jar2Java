@@ -54,9 +54,9 @@ public class Main {
             ZipEntry zipEntry = entries.nextElement();
             String name = zipEntry.getName();
             if (name.endsWith(".class")) {
-                log("start to show the code of " + name + "\n=======\ndisplayed as below:\n=======\n");
+//                log("start to show the code of " + name + "\n=======\ndisplayed as below:\n=======\n");
                 String result = Decompiler.decompile(jarFullPath, name);
-                log(result);
+//                log(result);
                 stringToClassFile(name, result);
             }
         }
