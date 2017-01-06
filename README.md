@@ -2,7 +2,7 @@
 
 ## Introduction
 
-the output of this project, which is a runnable jar file, is able to transfer jar to organized java files. Futher plan is to analyze them.
+The output of this project, which is a runnable jar file, is able to transfer jar to organized java files. Futher plan is to analyze them.
 
 ## Build
 
