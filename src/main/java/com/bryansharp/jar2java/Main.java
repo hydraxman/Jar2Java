@@ -22,11 +22,11 @@ public class Main {
     private static File baseDir;
 
     public static void main(String[] args) {
-        if (testJavassist()) {
+        if (testReadJar()) {
             return;
         }
         if (args == null || args.length < 1) {
-            log("please specify a jar file");
+            LogUtils.log("please specify a jar file");
             return;
         }
         try {
@@ -47,11 +47,11 @@ public class Main {
         }
     }
 
-    private static boolean testJavassist() {
+    private static boolean testReadJar() {
         try {
             initClassPathList(Arrays.asList(
                     "/Users/bushaopeng/Desktop/androidSDK/platforms/android-21/android.jar"
-                    , "/Users/bushaopeng/Desktop/androidProj/DXCommonToolbox/ToolboxSample/build/intermediates/exploded-aar/AudienceNetwork-4.17.0/jars/classes.jar"));
+                    , "/Users/bushaopeng/IdeaProjects/Jar2Java/build/classes.jar"));
             CtClass ctClass = ClassPool.getDefault().get("com.facebook.ads.internal.e.f");
             try {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -83,7 +83,7 @@ public class Main {
         ConstPool constPool = declaredMethod.getMethodInfo().getConstPool();
         for (int i = 0; i < constPool.getSize(); i++) {
             try {
-                log(i + ":" + constPool.getUtf8Info(i));
+                LogUtils.log(i + ":" + constPool.getUtf8Info(i));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -146,30 +146,6 @@ public class Main {
         return pathname + count;
     }
 
-    public static void log(Object msg) {
-        if (msg == null) {
-            return;
-        }
-        System.out.println(msg.toString());
-    }
-
-    public static void logDiv() {
-        System.out.println("==============================");
-    }
-
-    public static void logEach(Object... msgs) {
-        logDiv();
-        for (Object msg : msgs) {
-            System.out.print(msg.toString());
-            System.out.print("\t");
-        }
-        System.out.print("\n");
-        logDiv();
-    }
-
-    public static void printOpcode(int opCode) {
-        log("指令："+Utils.getOpMap().get(opCode));
-    }
 
     public static void initClassPathList(List<String> classPathList) {
         try {
@@ -239,122 +215,123 @@ public class Main {
 
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-            logEach("visitMethodInsn", opcode, owner, name, desc);
+            LogUtils.logEach("visitMethodInsn", LogUtils.getOpName(opcode), owner, name, desc);
             super.visitMethodInsn(opcode, owner, name, desc);
         }
 
         @Override
         public void visitAttribute(Attribute attribute) {
+            LogUtils.logEach("visitAttribute",attribute);
             super.visitAttribute(attribute);
         }
 
         @Override
         public void visitEnd() {
-            log("visitEnd");
+            LogUtils.log("visitEnd");
             super.visitEnd();
         }
 
         @Override
-        public void visitFieldInsn(int i, String s, String s1, String s2) {
-            logEach("visitFieldInsn", i, s, s1, s2);
-            super.visitFieldInsn(i, s, s1, s2);
+        public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+            LogUtils.logEach("visitFieldInsn", LogUtils.getOpName(opcode), owner, name, desc);
+            super.visitFieldInsn(opcode, owner, name, desc);
         }
 
         @Override
-        public void visitFrame(int i, int i1, Object[] objects, int i2, Object[] objects1) {
-            logEach("visitFrame", i, i1, i2);
-            super.visitFrame(i, i1, objects, i2, objects1);
+        public void visitFrame(int type, int nLocal, Object[] local, int nStack, Object[] stack) {
+            LogUtils.logEach("visitFrame", type, nLocal, nStack);
+            super.visitFrame(type, nLocal, local,  nStack, stack);
         }
 
         @Override
         public void visitLabel(Label label) {
-            logEach("visitLabel", label);
+            LogUtils.logEach("visitLabel", label);
             super.visitLabel(label);
         }
 
         @Override
-        public void visitLineNumber(int i, Label label) {
-            logEach("visitLineNumber", i, label);
-            super.visitLineNumber(i, label);
+        public void visitLineNumber(int line, Label label) {
+            LogUtils.logEach("visitLineNumber", line, label);
+            super.visitLineNumber(line, label);
         }
 
         @Override
-        public void visitIincInsn(int i, int i1) {
-            logEach("visitIincInsn", i, i1);
-            super.visitIincInsn(i, i1);
+        public void visitIincInsn(int var, int increment) {
+            LogUtils.logEach("visitIincInsn", var, increment);
+            super.visitIincInsn(var, increment);
         }
 
         @Override
         public void visitIntInsn(int i, int i1) {
-            logEach("visitIntInsn", i, i1);
+            LogUtils.logEach("visitIntInsn", i, i1);
             super.visitIntInsn(i, i1);
         }
 
         @Override
-        public void visitMaxs(int i, int i1) {
-            logEach("visitMaxs", i, i1);
-            super.visitMaxs(i, i1);
+        public void visitMaxs(int maxStack, int maxLocals) {
+            LogUtils.logEach("visitMaxs", maxStack, maxLocals);
+            super.visitMaxs(maxStack, maxLocals);
         }
 
         @Override
-        public void visitVarInsn(int i, int i1) {
-            logEach("visitVarInsn", i, i1);
-            super.visitVarInsn(i, i1);
+        public void visitVarInsn(int opcode, int var) {
+            LogUtils.logEach("visitVarInsn", LogUtils.getOpName(opcode), var);
+            super.visitVarInsn(opcode, var);
         }
 
         @Override
-        public void visitJumpInsn(int i, Label label) {
-            logEach("visitJumpInsn", i, label);
-            super.visitJumpInsn(i, label);
+        public void visitJumpInsn(int opcode, Label label) {
+            LogUtils.logEach("visitJumpInsn", LogUtils.getOpName(opcode), label);
+            super.visitJumpInsn(opcode, label);
         }
 
         @Override
         public void visitLdcInsn(Object o) {
-            logEach("visitLdcInsn", o);
+            LogUtils.logEach("visitLdcInsn", o);
             super.visitLdcInsn(o);
         }
 
         @Override
         public void visitLookupSwitchInsn(Label label, int[] ints, Label[] labels) {
-            logEach("visitLookupSwitchInsn", label);
+            LogUtils.logEach("visitLookupSwitchInsn", label);
             super.visitLookupSwitchInsn(label, ints, labels);
         }
 
         @Override
         public void visitMultiANewArrayInsn(String s, int i) {
-            logEach("visitMultiANewArrayInsn", s, i);
+            LogUtils.logEach("visitMultiANewArrayInsn", s, i);
             super.visitMultiANewArrayInsn(s, i);
         }
 
         @Override
         public void visitTableSwitchInsn(int i, int i1, Label label, Label[] labels) {
-            logEach("visitTableSwitchInsn", i, i1, label);
+            LogUtils.logEach("visitTableSwitchInsn", i, i1, label);
             super.visitTableSwitchInsn(i, i1, label, labels);
         }
 
         @Override
         public void visitTryCatchBlock(Label label, Label label1, Label label2, String s) {
-            logEach("visitTryCatchBlock", label, label1, label2, s);
+            LogUtils.logEach("visitTryCatchBlock", label, label1, label2, s);
             super.visitTryCatchBlock(label, label1, label2, s);
         }
 
         @Override
-        public void visitTypeInsn(int i, String s) {
-            logEach("visitTypeInsn", i, s);
-            super.visitTypeInsn(i, s);
+        public void visitTypeInsn(int opcode, String s) {
+            LogUtils.logEach("visitTypeInsn", LogUtils.getOpName(opcode), s);
+            super.visitTypeInsn(opcode, s);
         }
 
         @Override
         public void visitCode() {
             //此方法在访问方法的头部时被访问到，仅被访问一次
             //此处可插入新的指令
-            log("visitCode");
+            LogUtils.log("visitCode");
             super.visitCode();
         }
 
         @Override
         public void visitLocalVariable(String s, String s1, String s2, Label label, Label label1, int i) {
-            logEach("visitLocalVariable", s, s1, s2, label, label1, i);
+            LogUtils.logEach("visitLocalVariable", s, s1, s2, label, label1, i);
             super.visitLocalVariable(s, s1, s2, label, label1, i);
         }
 
@@ -363,7 +340,7 @@ public class Main {
         public void visitInsn(int opcode) {
             //此方法可以获取方法中每一条指令的操作类型，被访问多次
             //如应在方法结尾处添加新指令，则应判断：
-            printOpcode(opcode);
+            LogUtils.logEach("visitInsn",LogUtils.getOpName(opcode));
             if (opcode == Opcodes.RETURN) {
                 // pushes the 'out' field (of type PrintStream) of the System class
                 mv.visitFieldInsn(GETSTATIC,
