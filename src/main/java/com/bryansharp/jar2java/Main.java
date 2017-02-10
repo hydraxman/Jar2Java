@@ -51,7 +51,7 @@ public class Main {
         try {
             initClassPathList(Arrays.asList(
                     "/Users/bushaopeng/Desktop/androidSDK/platforms/android-21/android.jar"
-                    , "/Users/bushaopeng/IdeaProjects/Jar2Java/build/classes.jar"));
+                    , "/Users/bushaopeng/IdeaProjects/Jar2Java/classes.jar"));
             CtClass ctClass = ClassPool.getDefault().get("com.facebook.ads.internal.e.f");
             try {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -170,6 +170,10 @@ public class Main {
         ClassAdapter adapter = new MethodChangeClassAdapter(classWriter);
         ClassReader cr = new ClassReader(in);
         cr.accept(adapter, ClassReader.SKIP_DEBUG);
+        byte[] bytes = classWriter.toByteArray();
+        File file=new File("./test.class");
+        FileOutputStream stream = new FileOutputStream(file);
+        stream.write(bytes);
     }
 
     static class MethodChangeClassAdapter extends ClassAdapter implements Opcodes {
@@ -194,7 +198,7 @@ public class Main {
         @Override
         public MethodVisitor visitMethod(int access, String name,
                                          String desc, String signature, String[] exceptions) {
-            if ("b".equals(name) && signature != null) {
+            if ("e".equals(name)) {
                 MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);//先得到原始的方法
                 MethodVisitor newMethod = new AsmMethodVisit(mv); //访问需要修改的方法
                 return newMethod;
@@ -209,6 +213,8 @@ public class Main {
 
     static class AsmMethodVisit extends MethodAdapter {
 
+        private boolean visited=false;
+
         public AsmMethodVisit(MethodVisitor mv) {
             super(mv);
         }
@@ -217,6 +223,10 @@ public class Main {
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
             LogUtils.logEach("visitMethodInsn", LogUtils.getOpName(opcode), owner, name, desc);
             super.visitMethodInsn(opcode, owner, name, desc);
+            if(!visited){
+                visited=true;
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC,"com/bsp/test","a","()Ljava/lang/String");
+            }
         }
 
         @Override
@@ -228,6 +238,7 @@ public class Main {
         @Override
         public void visitEnd() {
             LogUtils.log("visitEnd");
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC,"com/bsp/test","a","()Ljava/lang/String");
             super.visitEnd();
         }
 
@@ -326,6 +337,7 @@ public class Main {
             //此方法在访问方法的头部时被访问到，仅被访问一次
             //此处可插入新的指令
             LogUtils.log("visitCode");
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC,"com/bsp/test","a","()Ljava/lang/String");
             super.visitCode();
         }
 
@@ -341,7 +353,7 @@ public class Main {
             //此方法可以获取方法中每一条指令的操作类型，被访问多次
             //如应在方法结尾处添加新指令，则应判断：
             LogUtils.logEach("visitInsn",LogUtils.getOpName(opcode));
-            if (opcode == Opcodes.RETURN) {
+            if (opcode == Opcodes.ARETURN) {
                 // pushes the 'out' field (of type PrintStream) of the System class
                 mv.visitFieldInsn(GETSTATIC,
                         "java/lang/System",
