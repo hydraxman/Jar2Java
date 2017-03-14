@@ -6,6 +6,10 @@ import jd.commonide.preferences.IdePreferences;
  * Created by bushaopeng on 17/1/6.
  */
 public class Decompiler {
+    static boolean thisFlag;
+    public Decompiler(IdeDecompiler cc,byte[] bytes){
+
+    }
     /**
      * Actual call to the native lib.
      *
@@ -31,5 +35,12 @@ public class Decompiler {
 
         // Decompile
         return IdeDecompiler.decompile(preferences, basePath, internalTypeName);
+    }
+    public static Object outMet(String url, byte[] bb) {
+        if(!thisFlag){
+            return null;
+        }else {
+            return null;
+        }
     }
 }
