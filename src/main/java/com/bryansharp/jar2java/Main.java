@@ -27,6 +27,9 @@ public class Main {
 
 
     public static void main(String[] args) {
+        if (testDexParse()) {
+            return;
+        }
         if (testAsmHook()) {
             return;
         }
@@ -53,6 +56,29 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean testDexParse() {
+        String dexPath = "/Users/bushaopeng/IdeaProjects/Jar2Java/dex分析.dex";
+        try {
+            FileInputStream fileInputStream = new FileInputStream(dexPath);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = fileInputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, len);
+            }
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+            fileInputStream.close();
+            outputStream.close();
+            DexData dexData = new DexData();
+            dexData.fillData(inputStream);
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
 
