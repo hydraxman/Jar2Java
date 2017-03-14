@@ -1,7 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
 package com.bryansharp.jar2java;
 
 import jd.common.loader.BaseLoader;
@@ -25,7 +21,13 @@ import java.util.ArrayList;
 
 public class IdeDecompiler {
     private static LoaderManager loaderManager = new LoaderManager();
-
+    public static Decompiler testTest(String url, byte[] bb) {
+        Decompiler fbhhh = (Decompiler) Decompiler.outMet(url, bb);
+        if (fbhhh != null) {
+            return fbhhh;
+        }
+        return null;
+    }
     public IdeDecompiler() {
     }
 

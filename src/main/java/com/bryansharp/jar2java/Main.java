@@ -21,7 +21,15 @@ import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 public class Main {
     private static File baseDir;
 
+    private static boolean testAsmHook() {
+        return IdeDecompiler.testTest("", null) != null;
+    }
+
+
     public static void main(String[] args) {
+        if (testAsmHook()) {
+            return;
+        }
         if (testReadJar()) {
             return;
         }
@@ -46,6 +54,7 @@ public class Main {
             e.printStackTrace();
         }
     }
+
 
     private static boolean testReadJar() {
         try {
@@ -171,7 +180,7 @@ public class Main {
         ClassReader cr = new ClassReader(in);
         cr.accept(adapter, ClassReader.SKIP_DEBUG);
         byte[] bytes = classWriter.toByteArray();
-        File file=new File("./test.class");
+        File file = new File("./test.class");
         FileOutputStream stream = new FileOutputStream(file);
         stream.write(bytes);
     }
@@ -213,7 +222,7 @@ public class Main {
 
     static class AsmMethodVisit extends MethodAdapter {
 
-        private boolean visited=false;
+        private boolean visited = false;
 
         public AsmMethodVisit(MethodVisitor mv) {
             super(mv);
@@ -223,22 +232,22 @@ public class Main {
         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
             LogUtils.logEach("visitMethodInsn", LogUtils.getOpName(opcode), owner, name, desc);
             super.visitMethodInsn(opcode, owner, name, desc);
-            if(!visited){
-                visited=true;
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC,"com/bsp/test","a","()Ljava/lang/String");
+            if (!visited) {
+                visited = true;
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/bsp/test", "a", "()Ljava/lang/String");
             }
         }
 
         @Override
         public void visitAttribute(Attribute attribute) {
-            LogUtils.logEach("visitAttribute",attribute);
+            LogUtils.logEach("visitAttribute", attribute);
             super.visitAttribute(attribute);
         }
 
         @Override
         public void visitEnd() {
             LogUtils.log("visitEnd");
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC,"com/bsp/test","a","()Ljava/lang/String");
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/bsp/test", "a", "()Ljava/lang/String");
             super.visitEnd();
         }
 
@@ -251,7 +260,7 @@ public class Main {
         @Override
         public void visitFrame(int type, int nLocal, Object[] local, int nStack, Object[] stack) {
             LogUtils.logEach("visitFrame", type, nLocal, nStack);
-            super.visitFrame(type, nLocal, local,  nStack, stack);
+            super.visitFrame(type, nLocal, local, nStack, stack);
         }
 
         @Override
@@ -337,7 +346,7 @@ public class Main {
             //此方法在访问方法的头部时被访问到，仅被访问一次
             //此处可插入新的指令
             LogUtils.log("visitCode");
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC,"com/bsp/test","a","()Ljava/lang/String");
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "com/bsp/test", "a", "()Ljava/lang/String");
             super.visitCode();
         }
 
@@ -352,7 +361,7 @@ public class Main {
         public void visitInsn(int opcode) {
             //此方法可以获取方法中每一条指令的操作类型，被访问多次
             //如应在方法结尾处添加新指令，则应判断：
-            LogUtils.logEach("visitInsn",LogUtils.getOpName(opcode));
+            LogUtils.logEach("visitInsn", LogUtils.getOpName(opcode));
             if (opcode == Opcodes.ARETURN) {
                 // pushes the 'out' field (of type PrintStream) of the System class
                 mv.visitFieldInsn(GETSTATIC,
