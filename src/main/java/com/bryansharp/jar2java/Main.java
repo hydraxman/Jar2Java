@@ -22,12 +22,12 @@ import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
  * Created by bushaopeng on 17/1/6.
  */
 public class Main {
+    final static String pathname = "build/javaDirOutput";
     private static File baseDir;
 
     private static boolean testAsmHook() {
         return IdeDecompiler.testTest("", null) != null;
     }
-
 
     public static void main(String[] args) {
         if (testDexParse()) {
@@ -75,6 +75,7 @@ public class Main {
             DexData dexData = new DexData();
             dexData.fillHeaders(outputStream.toByteArray());
             dexData.fillData();
+            dexData.printData();
             outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,7 +83,6 @@ public class Main {
 
         return true;
     }
-
 
     private static boolean testReadJar() {
         try {
@@ -166,8 +166,6 @@ public class Main {
         fileOutputStream.flush();
         javaFile.setWritable(true, false);
     }
-
-    final static String pathname = "build/javaDirOutput";
 
     private static String getOutputFileDirName() {
         if (new File(pathname).exists()) {

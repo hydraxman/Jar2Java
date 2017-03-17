@@ -112,4 +112,19 @@ public class DexData {
         }
     }
 
+    public void printData() {
+        for (Map.Entry<String, DexDataItem> entry : dataItems.entrySet()) {
+            DexDataItem item = entry.getValue();
+            if (item != null) {
+                if (item.data == null) {
+                    LogUtils.log(entry.getKey() + " : size is " + item.length + " : data is : null");
+                } else {
+                    String dataStr = new String(item.data);
+                    LogUtils.log(entry.getKey() + " : size is " + item.length + " : data is :");
+                    LogUtils.log(dataStr);
+
+                }
+            }
+        }
+    }
 }
