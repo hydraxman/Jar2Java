@@ -1,7 +1,10 @@
 package com.bryansharp.jar2java;
 
+import com.bryansharp.jar2java.entity.DexData;
+
 import javassist.*;
 import javassist.bytecode.ConstPool;
+
 import org.objectweb.asm.*;
 
 import java.io.*;
@@ -68,12 +71,11 @@ public class Main {
             while ((len = fileInputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, len);
             }
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
             fileInputStream.close();
-            outputStream.close();
             DexData dexData = new DexData();
-            dexData.fillData(inputStream);
-            inputStream.close();
+            dexData.fillHeaders(outputStream.toByteArray());
+            dexData.fillData();
+            outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
