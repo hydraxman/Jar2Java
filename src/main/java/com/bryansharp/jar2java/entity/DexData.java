@@ -3,12 +3,9 @@ package com.bryansharp.jar2java.entity;
 
 import com.bryansharp.jar2java.LogUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -104,9 +101,8 @@ public class DexData {
                     dataItem.start = item.bytes2Int();
                 }
                 if (dataItem.readyToFill()) {
-                    byte[] data = new byte[dataItem.length];
-                    System.arraycopy(dexData, dataItem.start, data, 0, dataItem.length);
-                    dataItem.data = data;
+                    dataItem.resetLengthByType();
+                    dataItem.fillData(dexData);
                 }
             }
         }
@@ -116,14 +112,7 @@ public class DexData {
         for (Map.Entry<String, DexDataItem> entry : dataItems.entrySet()) {
             DexDataItem item = entry.getValue();
             if (item != null) {
-                if (item.data == null) {
-                    LogUtils.log(entry.getKey() + " : size is " + item.length + " : data is : null");
-                } else {
-                    String dataStr = new String(item.data);
-                    LogUtils.log(entry.getKey() + " : size is " + item.length + " : data is :");
-                    LogUtils.log(dataStr);
-
-                }
+                item.printData();
             }
         }
     }

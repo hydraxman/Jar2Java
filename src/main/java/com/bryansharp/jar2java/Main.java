@@ -62,7 +62,7 @@ public class Main {
     }
 
     private static boolean testDexParse() {
-        String dexPath = "/Users/bushaopeng/IdeaProjects/Jar2Java/dex分析.dex";
+        String dexPath = "/Users/bsp/Desktop/IdeaProjs/Jar2Java/dex分析.dex";
         try {
             FileInputStream fileInputStream = new FileInputStream(dexPath);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
