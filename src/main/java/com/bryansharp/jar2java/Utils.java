@@ -265,4 +265,15 @@ public class Utils {
                 | ((ary[offset + 3] << 24) & 0xFF000000));
         return value;
     }
+
+    /**
+     * byte数组中取int数值，本方法适用于(低位在前，高位在后)的顺序。
+     *
+     * @param ary    byte数组
+     * @param offset 从数组的第offset位开始
+     * @return int数值
+     */
+    public static int u2ToInt(byte[] ary, int offset) {
+        return (ary[offset] & 0xFF) | ((ary[offset + 1] & 0xFF) << 8);
+    }
 }

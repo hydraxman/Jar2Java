@@ -1,11 +1,21 @@
-package com.bryansharp.jar2java.entity;
+package com.bryansharp.jar2java.entity.base;
 
 
 import com.bryansharp.jar2java.LogUtils;
+import com.bryansharp.jar2java.entity.ByteItem;
+import com.bryansharp.jar2java.entity.ClassDefsItem;
+import com.bryansharp.jar2java.entity.FieldIdsItem;
+import com.bryansharp.jar2java.entity.IntRefsItem;
+import com.bryansharp.jar2java.entity.MethodIdsItem;
+import com.bryansharp.jar2java.entity.ProtoIdsItem;
+import com.bryansharp.jar2java.entity.StringIdsItem;
+import com.bryansharp.jar2java.entity.TypeIdsItem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +23,16 @@ import java.util.Set;
  * Created by bushaopeng on 17/3/14.
  */
 public class DexData {
+    public static final String STRING_IDS = "stringIds";
+    public static final String CLASS_DEFS = "classDefs";
+    public static final String TYPE_IDS = "typeIds";
+    public static final String METHOD_IDS = "methodIds";
+    public static final String PROTO_IDS = "protoIds";
+    public static final String FIELD_IDS = "fieldIds";
+    private static final String[] sizeIsCountNames = new String[]{
+            STRING_IDS, CLASS_DEFS, TYPE_IDS, METHOD_IDS, PROTO_IDS, FIELD_IDS
+    };
+    public static final List<String> sizeIsCountNamesArr = Arrays.asList(sizeIsCountNames);
     private Map<String, DexHeadItem> headers = new LinkedHashMap<>();
     private Map<String, DexDataItem> dataItems = new HashMap<>();
     private byte[] dexData;
@@ -77,35 +97,81 @@ public class DexData {
         byte[] data = null;
         for (Map.Entry<String, DexHeadItem> entry : headers.entrySet()) {
             DexHeadItem headItem = entry.getValue();
-            data = new byte[headItem.length];
-            System.arraycopy(dexData, headItem.start, data, 0, headItem.length);
+            data = new byte[headItem.byteSize];
+            System.arraycopy(dexData, headItem.start, data, 0, headItem.byteSize);
             headItem.data = data;
         }
     }
 
     public void fillData() {
         Set<Map.Entry<String, DexHeadItem>> entries = headers.entrySet();
+        DexDataItem dataItem;
+        //生成数据条目对象
         for (Map.Entry<String, DexHeadItem> entry : entries) {
             DexHeadItem item = entry.getValue();
             if (item.hasSubContent()) {
                 String desc = item.getContentDesc();
-                DexDataItem dataItem = dataItems.get(desc);
+                dataItem = dataItems.get(desc);
                 if (dataItem == null) {
-                    dataItem = new DexDataItem(desc);
+                    dataItem = getDexDataItem(desc);
                     dataItems.put(desc, dataItem);
                 }
                 if (item.type == DexItem.TYPE_INT_SIZE) {
-                    dataItem.length = item.bytes2Int();
+                    dataItem.count = item.bytes2Int();
+                    dataItem.byteSize = dataItem.count * dataItem.getRefSize();
+                    dataItem.refs = dataItem.createRefs();
                 }
                 if (item.type == DexItem.TYPE_INT_OFFSET) {
                     dataItem.start = item.bytes2Int();
                 }
-                if (dataItem.readyToFill()) {
-                    dataItem.resetLengthByType();
-                    dataItem.fillData(dexData);
-                }
             }
         }
+        for (Map.Entry<String, DexDataItem> entry : dataItems.entrySet()) {
+            dataItem = entry.getValue();
+            if (dataItem.readyToFill()) {
+                dataItem.fillData(dexData);
+                dataItem.fillRefs();
+                dataItem.parseBaseRealData(dexData);
+            }
+        }
+        for (Map.Entry<String, DexDataItem> entry : dataItems.entrySet()) {
+            dataItem = entry.getValue();
+            if (dataItem.readyToFill()) {
+                dataItem.parse1stRealData(dataItems, dexData);
+            }
+        }
+        for (Map.Entry<String, DexDataItem> entry : dataItems.entrySet()) {
+            dataItem = entry.getValue();
+            if (dataItem.readyToFill()) {
+                dataItem.parse2ndRealData(dataItems, dexData);
+            }
+        }
+        for (Map.Entry<String, DexDataItem> entry : dataItems.entrySet()) {
+            dataItem = entry.getValue();
+            if (dataItem.readyToFill()) {
+                dataItem.parse3rdRealData(dataItems, dexData);
+            }
+        }
+    }
+
+    private DexDataItem getDexDataItem(String desc) {
+        DexDataItem dataItem;
+        if (DexData.STRING_IDS.equals(desc)) {
+            dataItem = new StringIdsItem(desc);
+        } else if (DexData.TYPE_IDS.equals(desc)) {
+            dataItem = new TypeIdsItem(desc);
+        } else if (DexData.CLASS_DEFS.equals(desc)) {
+            dataItem = new ClassDefsItem(desc);
+        } else if (DexData.PROTO_IDS.equals(desc)) {
+            dataItem = new ProtoIdsItem(desc);
+        } else if (DexData.METHOD_IDS.equals(desc)) {
+            dataItem = new MethodIdsItem(desc);
+        } else if (DexData.FIELD_IDS.equals(desc)) {
+            dataItem = new FieldIdsItem(desc);
+        } else {
+            dataItem = new ByteItem(desc);
+        }
+        return dataItem;
     }
 
     public void printData() {

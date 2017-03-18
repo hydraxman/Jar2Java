@@ -1,6 +1,6 @@
 package com.bryansharp.jar2java;
 
-import com.bryansharp.jar2java.entity.DexData;
+import com.bryansharp.jar2java.entity.base.DexData;
 
 import javassist.*;
 import javassist.bytecode.ConstPool;
