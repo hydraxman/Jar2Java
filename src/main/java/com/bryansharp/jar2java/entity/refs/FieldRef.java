@@ -11,7 +11,7 @@ public class FieldRef {
 
     @Override
     public String toString() {
-        return "FieldRef{" +
+        return "\nFieldRef{" +
                 "classIdx=" + classIdx +
                 ", typeIdx=" + typeIdx +
                 ", nameIdx=" + nameIdx +

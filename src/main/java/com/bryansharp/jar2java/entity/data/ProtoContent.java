@@ -10,7 +10,7 @@ public class ProtoContent {
 
     @Override
     public String toString() {
-        return "ProtoContent{" +
+        return "\nProtoContent{" +
                 "shorty='" + shorty + '\'' +
                 ", returnType='" + returnType + '\'' +
                 ", parameters='" + parameters + '\'' +

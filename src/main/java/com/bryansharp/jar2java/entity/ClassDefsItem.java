@@ -1,5 +1,7 @@
 package com.bryansharp.jar2java.entity;
 
+import com.bryansharp.jar2java.LogUtils;
+import com.bryansharp.jar2java.Mutf8;
 import com.bryansharp.jar2java.Utils;
 import com.bryansharp.jar2java.entity.base.DexData;
 import com.bryansharp.jar2java.entity.base.DexDataItem;
@@ -53,13 +55,41 @@ public class ClassDefsItem extends DexDataItem<ClassRef, ClassContent> {
         StringIdsItem sItem = (StringIdsItem) dataItems.get(DexData.STRING_IDS);
         String[] realData = item.realData;
         this.realData = new ClassContent[refs.length];
+
         for (int i = 0; i < refs.length; i++) {
+            ClassRef ref = refs[i];
             ClassContent classContent = new ClassContent();
-            classContent.className = realData[refs[i].classIdx];
-            classContent.superClassName = realData[refs[i].superclassIdx];
-            classContent.sourceFile = sItem.realData[refs[i].sourceFileIdx];
+            classContent.className = realData[ref.classIdx];
+            classContent.superClassName = realData[ref.superclassIdx];
+            classContent.sourceFile = sItem.realData[ref.sourceFileIdx];
+            int classDataOff = ref.classDataOff;
+            int[] sizes = new int[4];
+            int sizeOfSizes = 0;
+            for (int j = 0; j < 4; j++) {
+                int[] result = Mutf8.readUnsignedLeb128(dexData, classDataOff);
+                sizes[j] = result[0];
+                classDataOff += result[1];
+                sizeOfSizes += result[1];
+            }
+            classContent.classData = new ClassContent.ClassData(sizes);
+            classContent.classData.sizeOfSizes = sizeOfSizes;
+            if (i < refs.length - 1) {
+                int size = refs[i + 1].classDataOff - ref.classDataOff;
+                classContent.classData.data = new byte[size];
+                System.arraycopy(dexData, ref.classDataOff, classContent.classData.data, 0, size);
+            } else {
+                int size = dexData.length - ref.classDataOff;
+                classContent.classData.data = new byte[size];
+                System.arraycopy(dexData, ref.classDataOff, classContent.classData.data, 0, size);
+            }
             this.realData[i] = classContent;
         }
     }
 
+    @Override
+    public void parse4thRealData(Map<String, DexDataItem> dataItems, byte[] dexData) {
+        for (ClassContent content : realData) {
+            content.classData.fillData(dataItems,dexData);
+        }
+    }
 }

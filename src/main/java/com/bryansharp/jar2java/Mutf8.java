@@ -54,10 +54,26 @@ public final class Mutf8 {
      * @return
      */
     public static int[] readUnsignedLeb128(byte[] in) {
+        return readUnsignedLeb128(in, 0);
+    }
+
+    /**
+     * 每个leb128由1~5字节组成, 所有字节组合在一起表示一个32位的数据,
+     * 每个字节只有7位有效, 如果第1个字节的最高位为1, 表示leb128需要使用到第2个字节,
+     * 如果第2个字节的最高位为1, 表示需要使用到第3个字节, 以此类推直到最后的字节最高位为0,
+     * 当然, leb128最多只会使用到5个字节, 如果读取5个字节后下一个字节最高位仍为1, 则表示该dex无效
+     *
+     * @param in
+     * @return
+     */
+    public static int[] readUnsignedLeb128(byte[] in, int offset) {
+        if (in == null) {
+            return new int[]{0, 0};
+        }
         int result = 0;
         int cur;
         int count = 0;
-        int i = 0;
+        int i = offset;
         do {
             cur = in[i++] & 0xff;
             result |= (cur & 0x7f) << (count * 7);

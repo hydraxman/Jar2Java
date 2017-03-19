@@ -16,7 +16,7 @@ public class ClassRef {
 
     @Override
     public String toString() {
-        return "ClassRef{" +
+        return "\nClassRef{" +
                 "classIdx=" + classIdx +
                 ", accessFlags=" + accessFlags +
                 ", superclassIdx=" + superclassIdx +

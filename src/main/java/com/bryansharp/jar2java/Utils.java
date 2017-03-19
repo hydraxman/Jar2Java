@@ -1,5 +1,8 @@
 package com.bryansharp.jar2java;
 
+import com.bryansharp.jar2java.entity.base.DvmOpcode;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +11,279 @@ import java.util.Map;
  */
 public class Utils {
     static HashMap<Integer, String> opCodeMap = new HashMap<>();
+    static HashMap<String, String> patternFormMap = new HashMap<>();
+    static HashMap<Integer, DvmOpcode> dvmOpCodeMap = new HashMap<>();
+
+    public static Map<String, String> getPatternFormMap() {
+        if (patternFormMap.size() == 0) {
+            patternFormMap.put("00x", "N/A");
+            patternFormMap.put("10x", "ØØ|op");
+            patternFormMap.put("12x", "B|A|op");
+            patternFormMap.put("11n", "B|A|op");
+            patternFormMap.put("11x", "AA|op");
+            patternFormMap.put("10t", "AA|op");
+            patternFormMap.put("20t", "ØØ|op AAAA");
+            patternFormMap.put("20bc", "AA|op BBBB");
+            patternFormMap.put("22x", "AA|op BBBB");
+            patternFormMap.put("21t", "AA|op BBBB");
+            patternFormMap.put("21s", "AA|op BBBB");
+            patternFormMap.put("21h", "AA|op BBBB");
+            patternFormMap.put("21c", "AA|op BBBB");
+            patternFormMap.put("23x", "AA|op CC|BB");
+            patternFormMap.put("22b", "AA|op CC|BB");
+            patternFormMap.put("22t", "B|A|op CCCC");
+            patternFormMap.put("22s", "B|A|op CCCC");
+            patternFormMap.put("22c", "B|A|op CCCC");
+            patternFormMap.put("22cs", "B|A|op CCCC");
+            patternFormMap.put("30t", "ØØ|op AAAAloAAAAhi");
+            patternFormMap.put("32x", "ØØ|op AAAA BBBB");
+            patternFormMap.put("31i", "AA|op BBBBloBBBBhi");
+            patternFormMap.put("31t", "AA|op BBBBloBBBBhi");
+            patternFormMap.put("31c", "AA|op BBBBloBBBBhi");
+            patternFormMap.put("35c", "A|G|op BBBB F|E|D|C");
+            patternFormMap.put("35ms", "A|G|op BBBB F|E|D|C");
+            patternFormMap.put("35mi", "A|G|op BBBB F|E|D|C");
+            patternFormMap.put("3rc", "AA|op BBBB CCCC");
+            patternFormMap.put("3rms", "AA|op BBBB CCCC");
+            patternFormMap.put("3rmi", "AA|op BBBB CCCC");
+            patternFormMap.put("51l", "AA|op BBBBloBBBB BBBB BBBBhi");
+            patternFormMap.put("33x", "exop BB|AA CCCC");
+            patternFormMap.put("32s", "exop BB|AA CCCC");
+            patternFormMap.put("40sc", "exop BBBBloBBBBhiAAAA");
+            patternFormMap.put("41c", "exop BBBBloBBBBhiAAAA  ");
+            patternFormMap.put("52c", "exop CCCCloCCCChi    AAAA BBBB");
+            patternFormMap.put("5rc", "exop BBBBloBBBBhi    AAAA CCCC");
+        }
+        return patternFormMap;
+    }
+
+    public static Map<Integer, DvmOpcode> getDvmOpCodeMap() {
+        if (dvmOpCodeMap.size() == 0) {
+            dvmOpCodeMap.put(0x00, new DvmOpcode(0x00, "10x", "nop"));
+            dvmOpCodeMap.put(0x01, new DvmOpcode(0x01, "12x", "move "));
+            dvmOpCodeMap.put(0x02, new DvmOpcode(0x02, "22x", "move/from16 "));
+            dvmOpCodeMap.put(0x03, new DvmOpcode(0x03, "32x", "move/16 "));
+            dvmOpCodeMap.put(0x04, new DvmOpcode(0x04, "12x", "move-wide "));
+            dvmOpCodeMap.put(0x05, new DvmOpcode(0x05, "22x", "move-wide/from16 "));
+            dvmOpCodeMap.put(0x06, new DvmOpcode(0x06, "32x", "move-wide/16 "));
+            dvmOpCodeMap.put(0x07, new DvmOpcode(0x07, "12x", "move-object "));
+            dvmOpCodeMap.put(0x08, new DvmOpcode(0x08, "22x", "move-object/from16 "));
+            dvmOpCodeMap.put(0x09, new DvmOpcode(0x09, "32x", "move-object/16 "));
+            dvmOpCodeMap.put(0x0a, new DvmOpcode(0x0a, "11x", "move-result "));
+            dvmOpCodeMap.put(0x0b, new DvmOpcode(0x0b, "11x", "move-result-wide "));
+            dvmOpCodeMap.put(0x0c, new DvmOpcode(0x0c, "11x", "move-result-object "));
+            dvmOpCodeMap.put(0x0d, new DvmOpcode(0x0d, "11x", "move-exception "));
+            dvmOpCodeMap.put(0x0e, new DvmOpcode(0x0e, "10x", "return-void"));
+            dvmOpCodeMap.put(0x0f, new DvmOpcode(0x0f, "11x", "return "));
+            dvmOpCodeMap.put(0x10, new DvmOpcode(0x10, "11x", "return-wide "));
+            dvmOpCodeMap.put(0x11, new DvmOpcode(0x11, "11x", "return-object "));
+            dvmOpCodeMap.put(0x12, new DvmOpcode(0x12, "11n", "const/4 "));
+            dvmOpCodeMap.put(0x13, new DvmOpcode(0x13, "21s", "const/16 "));
+            dvmOpCodeMap.put(0x14, new DvmOpcode(0x14, "31i", "const "));
+            dvmOpCodeMap.put(0x15, new DvmOpcode(0x15, "21h", "const/high16 "));
+            dvmOpCodeMap.put(0x16, new DvmOpcode(0x16, "21s", "const-wide/16 "));
+            dvmOpCodeMap.put(0x17, new DvmOpcode(0x17, "31i", "const-wide/32 "));
+            dvmOpCodeMap.put(0x18, new DvmOpcode(0x18, "51l", "const-wide "));
+            dvmOpCodeMap.put(0x19, new DvmOpcode(0x19, "21h", "const-wide/high16 "));
+            dvmOpCodeMap.put(0x1a, new DvmOpcode(0x1a, "21c", "const-string "));
+            dvmOpCodeMap.put(0x1b, new DvmOpcode(0x1b, "31c", "const-string/jumbo "));
+            dvmOpCodeMap.put(0x1c, new DvmOpcode(0x1c, "21c", "const-class "));
+            dvmOpCodeMap.put(0x1d, new DvmOpcode(0x1d, "11x", "monitor-enter "));
+            dvmOpCodeMap.put(0x1e, new DvmOpcode(0x1e, "11x", "monitor-exit "));
+            dvmOpCodeMap.put(0x1f, new DvmOpcode(0x1f, "21c", "check-cast "));
+            dvmOpCodeMap.put(0x20, new DvmOpcode(0x20, "22c", "instance-of "));
+            dvmOpCodeMap.put(0x21, new DvmOpcode(0x21, "12x", "array-length "));
+            dvmOpCodeMap.put(0x22, new DvmOpcode(0x22, "21c", "new-instance "));
+            dvmOpCodeMap.put(0x23, new DvmOpcode(0x23, "22c", "new-array "));
+            dvmOpCodeMap.put(0x24, new DvmOpcode(0x24, "35c", "filled-new-array "));
+            dvmOpCodeMap.put(0x25, new DvmOpcode(0x25, "3rc", "filled-new-array/range "));
+            dvmOpCodeMap.put(0x26, new DvmOpcode(0x26, "31t", "fill-array-data "));
+            dvmOpCodeMap.put(0x27, new DvmOpcode(0x27, "11x", "throw "));
+            dvmOpCodeMap.put(0x28, new DvmOpcode(0x28, "10t", "goto "));
+            dvmOpCodeMap.put(0x29, new DvmOpcode(0x29, "20t", "goto/16 "));
+            dvmOpCodeMap.put(0x2a, new DvmOpcode(0x2a, "30t", "goto/32 "));
+            dvmOpCodeMap.put(0x2b, new DvmOpcode(0x2b, "31t", "packed-switch "));
+            dvmOpCodeMap.put(0x2c, new DvmOpcode(0x2c, "31t", "sparse-switch "));
+            dvmOpCodeMap.put(0x2d, new DvmOpcode(0x2d, "23x", " cmpl-float (lt"));
+            dvmOpCodeMap.put(0x2e, new DvmOpcode(0x2e, "23x", " cmpg-float (gt"));
+            dvmOpCodeMap.put(0x2f, new DvmOpcode(0x2f, "23x", " cmpl-double (lt"));
+            dvmOpCodeMap.put(0x30, new DvmOpcode(0x30, "23x", " cmpg-double (gt"));
+            dvmOpCodeMap.put(0x31, new DvmOpcode(0x31, "23x", "cmp-long"));
+            dvmOpCodeMap.put(0x32, new DvmOpcode(0x32, "22t", "if-eq"));
+            dvmOpCodeMap.put(0x33, new DvmOpcode(0x33, "22t", "if-ne"));
+            dvmOpCodeMap.put(0x34, new DvmOpcode(0x34, "22t", "if-lt"));
+            dvmOpCodeMap.put(0x35, new DvmOpcode(0x35, "22t", "if-ge"));
+            dvmOpCodeMap.put(0x36, new DvmOpcode(0x36, "22t", "if-gt"));
+            dvmOpCodeMap.put(0x37, new DvmOpcode(0x37, "22t", "if-le"));
+            dvmOpCodeMap.put(0x38, new DvmOpcode(0x38, "21t", "if-eqz"));
+            dvmOpCodeMap.put(0x39, new DvmOpcode(0x39, "21t", "if-nez"));
+            dvmOpCodeMap.put(0x3a, new DvmOpcode(0x3a, "21t", "if-ltz"));
+            dvmOpCodeMap.put(0x3b, new DvmOpcode(0x3b, "21t", "if-gez"));
+            dvmOpCodeMap.put(0x3c, new DvmOpcode(0x3c, "21t", "if-gtz"));
+            dvmOpCodeMap.put(0x3d, new DvmOpcode(0x3d, "21t", "if-lez"));
+            dvmOpCodeMap.put(0x44, new DvmOpcode(0x44, "23x", "aget"));
+            dvmOpCodeMap.put(0x45, new DvmOpcode(0x45, "23x", "aget-wide"));
+            dvmOpCodeMap.put(0x46, new DvmOpcode(0x46, "23x", "aget-object"));
+            dvmOpCodeMap.put(0x47, new DvmOpcode(0x47, "23x", "aget-boolean"));
+            dvmOpCodeMap.put(0x48, new DvmOpcode(0x48, "23x", "aget-byte"));
+            dvmOpCodeMap.put(0x49, new DvmOpcode(0x49, "23x", "aget-char"));
+            dvmOpCodeMap.put(0x4a, new DvmOpcode(0x4a, "23x", "aget-short"));
+            dvmOpCodeMap.put(0x4b, new DvmOpcode(0x4b, "23x", "aput"));
+            dvmOpCodeMap.put(0x4c, new DvmOpcode(0x4c, "23x", "aput-wide"));
+            dvmOpCodeMap.put(0x4d, new DvmOpcode(0x4d, "23x", "aput-object"));
+            dvmOpCodeMap.put(0x4e, new DvmOpcode(0x4e, "23x", "aput-boolean"));
+            dvmOpCodeMap.put(0x4f, new DvmOpcode(0x4f, "23x", "aput-byte"));
+            dvmOpCodeMap.put(0x50, new DvmOpcode(0x50, "23x", "aput-char"));
+            dvmOpCodeMap.put(0x51, new DvmOpcode(0x51, "23x", "aput-short"));
+            dvmOpCodeMap.put(0x52, new DvmOpcode(0x52, "22c", "iget"));
+            dvmOpCodeMap.put(0x53, new DvmOpcode(0x53, "22c", "iget-wide"));
+            dvmOpCodeMap.put(0x54, new DvmOpcode(0x54, "22c", "iget-object"));
+            dvmOpCodeMap.put(0x55, new DvmOpcode(0x55, "22c", "iget-boolean"));
+            dvmOpCodeMap.put(0x56, new DvmOpcode(0x56, "22c", "iget-byte"));
+            dvmOpCodeMap.put(0x57, new DvmOpcode(0x57, "22c", "iget-char"));
+            dvmOpCodeMap.put(0x58, new DvmOpcode(0x58, "22c", "iget-short"));
+            dvmOpCodeMap.put(0x59, new DvmOpcode(0x59, "22c", "iput"));
+            dvmOpCodeMap.put(0x5a, new DvmOpcode(0x5a, "22c", "iput-wide"));
+            dvmOpCodeMap.put(0x5b, new DvmOpcode(0x5b, "22c", "iput-object"));
+            dvmOpCodeMap.put(0x5c, new DvmOpcode(0x5c, "22c", "iput-boolean"));
+            dvmOpCodeMap.put(0x5d, new DvmOpcode(0x5d, "22c", "iput-byte"));
+            dvmOpCodeMap.put(0x5e, new DvmOpcode(0x5e, "22c", "iput-char"));
+            dvmOpCodeMap.put(0x5f, new DvmOpcode(0x5f, "22c", "iput-short"));
+            dvmOpCodeMap.put(0x60, new DvmOpcode(0x60, "21c", "sget"));
+            dvmOpCodeMap.put(0x61, new DvmOpcode(0x61, "21c", "sget-wide"));
+            dvmOpCodeMap.put(0x62, new DvmOpcode(0x62, "21c", "sget-object"));
+            dvmOpCodeMap.put(0x63, new DvmOpcode(0x63, "21c", "sget-boolean"));
+            dvmOpCodeMap.put(0x64, new DvmOpcode(0x64, "21c", "sget-byte"));
+            dvmOpCodeMap.put(0x65, new DvmOpcode(0x65, "21c", "sget-char"));
+            dvmOpCodeMap.put(0x66, new DvmOpcode(0x66, "21c", "sget-short"));
+            dvmOpCodeMap.put(0x67, new DvmOpcode(0x67, "21c", "sput"));
+            dvmOpCodeMap.put(0x68, new DvmOpcode(0x68, "21c", "sput-wide"));
+            dvmOpCodeMap.put(0x69, new DvmOpcode(0x69, "21c", "sput-object"));
+            dvmOpCodeMap.put(0x6a, new DvmOpcode(0x6a, "21c", "sput-boolean"));
+            dvmOpCodeMap.put(0x6b, new DvmOpcode(0x6b, "21c", "sput-byte"));
+            dvmOpCodeMap.put(0x6c, new DvmOpcode(0x6c, "21c", "sput-char"));
+            dvmOpCodeMap.put(0x6d, new DvmOpcode(0x6d, "21c", "sput-short"));
+            dvmOpCodeMap.put(0x6e, new DvmOpcode(0x6e, "35c", "invoke-virtual"));
+            dvmOpCodeMap.put(0x6f, new DvmOpcode(0x6f, "35c", "invoke-super"));
+            dvmOpCodeMap.put(0x70, new DvmOpcode(0x70, "35c", "invoke-direct"));
+            dvmOpCodeMap.put(0x71, new DvmOpcode(0x71, "35c", "invoke-static"));
+            dvmOpCodeMap.put(0x72, new DvmOpcode(0x72, "35c", "invoke-interface"));
+            dvmOpCodeMap.put(0x74, new DvmOpcode(0x74, "3rc", "invoke-virtual/range"));
+            dvmOpCodeMap.put(0x75, new DvmOpcode(0x75, "3rc", "invoke-super/range"));
+            dvmOpCodeMap.put(0x76, new DvmOpcode(0x76, "3rc", "invoke-direct/range"));
+            dvmOpCodeMap.put(0x77, new DvmOpcode(0x77, "3rc", "invoke-static/range"));
+            dvmOpCodeMap.put(0x78, new DvmOpcode(0x78, "3rc", "invoke-interface/range"));
+            dvmOpCodeMap.put(0x7b, new DvmOpcode(0x7b, "12x", "neg-int"));
+            dvmOpCodeMap.put(0x7c, new DvmOpcode(0x7c, "12x", "not-int"));
+            dvmOpCodeMap.put(0x7d, new DvmOpcode(0x7d, "12x", "neg-long"));
+            dvmOpCodeMap.put(0x7e, new DvmOpcode(0x7e, "12x", "not-long"));
+            dvmOpCodeMap.put(0x7f, new DvmOpcode(0x7f, "12x", "neg-float"));
+            dvmOpCodeMap.put(0x80, new DvmOpcode(0x80, "12x", "neg-double"));
+            dvmOpCodeMap.put(0x81, new DvmOpcode(0x81, "12x", "int-to-long"));
+            dvmOpCodeMap.put(0x82, new DvmOpcode(0x82, "12x", "int-to-float"));
+            dvmOpCodeMap.put(0x83, new DvmOpcode(0x83, "12x", "int-to-double"));
+            dvmOpCodeMap.put(0x84, new DvmOpcode(0x84, "12x", "long-to-int"));
+            dvmOpCodeMap.put(0x85, new DvmOpcode(0x85, "12x", "long-to-float"));
+            dvmOpCodeMap.put(0x86, new DvmOpcode(0x86, "12x", "long-to-double"));
+            dvmOpCodeMap.put(0x87, new DvmOpcode(0x87, "12x", "float-to-int"));
+            dvmOpCodeMap.put(0x88, new DvmOpcode(0x88, "12x", "float-to-long"));
+            dvmOpCodeMap.put(0x89, new DvmOpcode(0x89, "12x", "float-to-double"));
+            dvmOpCodeMap.put(0x8a, new DvmOpcode(0x8a, "12x", "double-to-int"));
+            dvmOpCodeMap.put(0x8b, new DvmOpcode(0x8b, "12x", "double-to-long"));
+            dvmOpCodeMap.put(0x8c, new DvmOpcode(0x8c, "12x", "double-to-float"));
+            dvmOpCodeMap.put(0x8d, new DvmOpcode(0x8d, "12x", "int-to-byte"));
+            dvmOpCodeMap.put(0x8e, new DvmOpcode(0x8e, "12x", "int-to-char"));
+            dvmOpCodeMap.put(0x8f, new DvmOpcode(0x8f, "12x", "int-to-short"));
+            dvmOpCodeMap.put(0x90, new DvmOpcode(0x90, "23x", "add-int"));
+            dvmOpCodeMap.put(0x91, new DvmOpcode(0x91, "23x", "sub-int"));
+            dvmOpCodeMap.put(0x92, new DvmOpcode(0x92, "23x", "mul-int"));
+            dvmOpCodeMap.put(0x93, new DvmOpcode(0x93, "23x", "div-int"));
+            dvmOpCodeMap.put(0x94, new DvmOpcode(0x94, "23x", "rem-int"));
+            dvmOpCodeMap.put(0x95, new DvmOpcode(0x95, "23x", "and-int"));
+            dvmOpCodeMap.put(0x96, new DvmOpcode(0x96, "23x", "or-int"));
+            dvmOpCodeMap.put(0x97, new DvmOpcode(0x97, "23x", "xor-int"));
+            dvmOpCodeMap.put(0x98, new DvmOpcode(0x98, "23x", "shl-int"));
+            dvmOpCodeMap.put(0x99, new DvmOpcode(0x99, "23x", "shr-int"));
+            dvmOpCodeMap.put(0x9a, new DvmOpcode(0x9a, "23x", "ushr-int"));
+            dvmOpCodeMap.put(0x9b, new DvmOpcode(0x9b, "23x", "add-long"));
+            dvmOpCodeMap.put(0x9c, new DvmOpcode(0x9c, "23x", "sub-long"));
+            dvmOpCodeMap.put(0x9d, new DvmOpcode(0x9d, "23x", "mul-long"));
+            dvmOpCodeMap.put(0x9e, new DvmOpcode(0x9e, "23x", "div-long"));
+            dvmOpCodeMap.put(0x9f, new DvmOpcode(0x9f, "23x", "rem-long"));
+            dvmOpCodeMap.put(0xa0, new DvmOpcode(0xa0, "23x", "and-long"));
+            dvmOpCodeMap.put(0xa1, new DvmOpcode(0xa1, "23x", "or-long"));
+            dvmOpCodeMap.put(0xa2, new DvmOpcode(0xa2, "23x", "xor-long"));
+            dvmOpCodeMap.put(0xa3, new DvmOpcode(0xa3, "23x", "shl-long"));
+            dvmOpCodeMap.put(0xa4, new DvmOpcode(0xa4, "23x", "shr-long"));
+            dvmOpCodeMap.put(0xa5, new DvmOpcode(0xa5, "23x", "ushr-long"));
+            dvmOpCodeMap.put(0xa6, new DvmOpcode(0xa6, "23x", "add-float"));
+            dvmOpCodeMap.put(0xa7, new DvmOpcode(0xa7, "23x", "sub-float"));
+            dvmOpCodeMap.put(0xa8, new DvmOpcode(0xa8, "23x", "mul-float"));
+            dvmOpCodeMap.put(0xa9, new DvmOpcode(0xa9, "23x", "div-float"));
+            dvmOpCodeMap.put(0xaa, new DvmOpcode(0xaa, "23x", "rem-float"));
+            dvmOpCodeMap.put(0xab, new DvmOpcode(0xab, "23x", "add-double"));
+            dvmOpCodeMap.put(0xac, new DvmOpcode(0xac, "23x", "sub-double"));
+            dvmOpCodeMap.put(0xad, new DvmOpcode(0xad, "23x", "mul-double"));
+            dvmOpCodeMap.put(0xae, new DvmOpcode(0xae, "23x", "div-double"));
+            dvmOpCodeMap.put(0xaf, new DvmOpcode(0xaf, "23x", "rem-double"));
+            dvmOpCodeMap.put(0xb0, new DvmOpcode(0xb0, "12x", "add-int/2addr"));
+            dvmOpCodeMap.put(0xb1, new DvmOpcode(0xb1, "12x", "sub-int/2addr"));
+            dvmOpCodeMap.put(0xb2, new DvmOpcode(0xb2, "12x", "mul-int/2addr"));
+            dvmOpCodeMap.put(0xb3, new DvmOpcode(0xb3, "12x", "div-int/2addr"));
+            dvmOpCodeMap.put(0xb4, new DvmOpcode(0xb4, "12x", "rem-int/2addr"));
+            dvmOpCodeMap.put(0xb5, new DvmOpcode(0xb5, "12x", "and-int/2addr"));
+            dvmOpCodeMap.put(0xb6, new DvmOpcode(0xb6, "12x", "or-int/2addr"));
+            dvmOpCodeMap.put(0xb7, new DvmOpcode(0xb7, "12x", "xor-int/2addr"));
+            dvmOpCodeMap.put(0xb8, new DvmOpcode(0xb8, "12x", "shl-int/2addr"));
+            dvmOpCodeMap.put(0xb9, new DvmOpcode(0xb9, "12x", "shr-int/2addr"));
+            dvmOpCodeMap.put(0xba, new DvmOpcode(0xba, "12x", "ushr-int/2addr"));
+            dvmOpCodeMap.put(0xbb, new DvmOpcode(0xbb, "12x", "add-long/2addr"));
+            dvmOpCodeMap.put(0xbc, new DvmOpcode(0xbc, "12x", "sub-long/2addr"));
+            dvmOpCodeMap.put(0xbd, new DvmOpcode(0xbd, "12x", "mul-long/2addr"));
+            dvmOpCodeMap.put(0xbe, new DvmOpcode(0xbe, "12x", "div-long/2addr"));
+            dvmOpCodeMap.put(0xbf, new DvmOpcode(0xbf, "12x", "rem-long/2addr"));
+            dvmOpCodeMap.put(0xc0, new DvmOpcode(0xc0, "12x", "and-long/2addr"));
+            dvmOpCodeMap.put(0xc1, new DvmOpcode(0xc1, "12x", "or-long/2addr"));
+            dvmOpCodeMap.put(0xc2, new DvmOpcode(0xc2, "12x", "xor-long/2addr"));
+            dvmOpCodeMap.put(0xc3, new DvmOpcode(0xc3, "12x", "shl-long/2addr"));
+            dvmOpCodeMap.put(0xc4, new DvmOpcode(0xc4, "12x", "shr-long/2addr"));
+            dvmOpCodeMap.put(0xc5, new DvmOpcode(0xc5, "12x", "ushr-long/2addr"));
+            dvmOpCodeMap.put(0xc6, new DvmOpcode(0xc6, "12x", "add-float/2addr"));
+            dvmOpCodeMap.put(0xc7, new DvmOpcode(0xc7, "12x", "sub-float/2addr"));
+            dvmOpCodeMap.put(0xc8, new DvmOpcode(0xc8, "12x", "mul-float/2addr"));
+            dvmOpCodeMap.put(0xc9, new DvmOpcode(0xc9, "12x", "div-float/2addr"));
+            dvmOpCodeMap.put(0xca, new DvmOpcode(0xca, "12x", "rem-float/2addr"));
+            dvmOpCodeMap.put(0xcb, new DvmOpcode(0xcb, "12x", "add-double/2addr"));
+            dvmOpCodeMap.put(0xcc, new DvmOpcode(0xcc, "12x", "sub-double/2addr"));
+            dvmOpCodeMap.put(0xcd, new DvmOpcode(0xcd, "12x", "mul-double/2addr"));
+            dvmOpCodeMap.put(0xce, new DvmOpcode(0xce, "12x", "div-double/2addr"));
+            dvmOpCodeMap.put(0xcf, new DvmOpcode(0xcf, "12x", "rem-double/2addr"));
+            dvmOpCodeMap.put(0xd0, new DvmOpcode(0xd0, "22s", "add-int/lit16"));
+            dvmOpCodeMap.put(0xd1, new DvmOpcode(0xd1, "22s", " rsub-int"));
+            dvmOpCodeMap.put(0xd2, new DvmOpcode(0xd2, "22s", "mul-int/lit16"));
+            dvmOpCodeMap.put(0xd3, new DvmOpcode(0xd3, "22s", "div-int/lit16"));
+            dvmOpCodeMap.put(0xd4, new DvmOpcode(0xd4, "22s", "rem-int/lit16"));
+            dvmOpCodeMap.put(0xd5, new DvmOpcode(0xd5, "22s", "and-int/lit16"));
+            dvmOpCodeMap.put(0xd6, new DvmOpcode(0xd6, "22s", "or-int/lit16"));
+            dvmOpCodeMap.put(0xd7, new DvmOpcode(0xd7, "22s", "xor-int/lit16"));
+            dvmOpCodeMap.put(0xd8, new DvmOpcode(0xd8, "22b", "add-int/lit8"));
+            dvmOpCodeMap.put(0xd9, new DvmOpcode(0xd9, "22b", "rsub-int/lit8"));
+            dvmOpCodeMap.put(0xda, new DvmOpcode(0xda, "22b", "mul-int/lit8"));
+            dvmOpCodeMap.put(0xdb, new DvmOpcode(0xdb, "22b", "div-int/lit8"));
+            dvmOpCodeMap.put(0xdc, new DvmOpcode(0xdc, "22b", "rem-int/lit8"));
+            dvmOpCodeMap.put(0xdd, new DvmOpcode(0xdd, "22b", "and-int/lit8"));
+            dvmOpCodeMap.put(0xde, new DvmOpcode(0xde, "22b", "or-int/lit8"));
+            dvmOpCodeMap.put(0xdf, new DvmOpcode(0xdf, "22b", "xor-int/lit8"));
+            dvmOpCodeMap.put(0xe0, new DvmOpcode(0xe0, "22b", "shl-int/lit8"));
+            dvmOpCodeMap.put(0xe1, new DvmOpcode(0xe1, "22b", "shr-int/lit8"));
+            dvmOpCodeMap.put(0xe2, new DvmOpcode(0xe2, "22b", "ushr-int/lit8"));
+            dvmOpCodeMap.put(0xfa, new DvmOpcode(0xfa, "5cc", "invoke-polymorphic "));
+            dvmOpCodeMap.put(0xfb, new DvmOpcode(0xfb, "rcc", "invoke-polymorphic/range "));
+            dvmOpCodeMap.put(0xfc, new DvmOpcode(0xfc, "35c", "invoke-custom "));
+            dvmOpCodeMap.put(0xfd, new DvmOpcode(0xfd, "3rc", "invoke-custom/range "));
+        }
+        return dvmOpCodeMap;
+    }
 
     public static Map<Integer, String> getOpMap() {
         if (opCodeMap.size() == 0) {
@@ -266,6 +542,23 @@ public class Utils {
         return value;
     }
 
+    public static String bytesToString(byte[] array, int start) {
+        if (array == null) {
+            return "null";
+        }
+        StringBuilder sb = new StringBuilder();
+        int u;
+        for (int i = start; i < array.length; i++) {
+            u = array[i] & 0xFF;
+            if (u < 0x10) {
+                sb.append(String.format("0%x", u)).append(" ");
+            } else {
+                sb.append(String.format("%x", u)).append(" ");
+            }
+        }
+        return sb.toString();
+    }
+
     /**
      * byte数组中取int数值，本方法适用于(低位在前，高位在后)的顺序。
      *
@@ -275,5 +568,44 @@ public class Utils {
      */
     public static int u2ToInt(byte[] ary, int offset) {
         return (ary[offset] & 0xFF) | ((ary[offset + 1] & 0xFF) << 8);
+    }
+
+    public static int u2ToIntLittle(byte[] ary, int offset) {
+        return (ary[offset + 1] & 0xFF) | ((ary[offset] & 0xFF) << 8);
+    }
+
+    public static String intsToStringBy4(int[] array, int start) {
+        if (array == null) {
+            return "null";
+        }
+        StringBuilder sb = new StringBuilder();
+        int times;
+        for (int i = start; i < array.length; i++) {
+            String digit = String.format("%x", array[i]);
+            times = 4 - digit.length();
+            for (int j = 0; j < times; j++) {
+                digit = "0" + digit;
+            }
+            sb.append(digit).append(" ");
+        }
+        return sb.toString();
+    }
+
+    public static String bytesToInsnForm(byte[] data) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < data.length; i += 2) {
+            int a = data[i + 1] & 0xff;
+            int b = data[i] & 0xff;
+            String ap = "%x";
+            String bp = "%x";
+            if (a < 0x10) {
+                ap = "0" + ap;
+            }
+            if (b < 0x10) {
+                bp = "0" + bp;
+            }
+            sb.append(String.format(ap + bp + " ", a, b));
+        }
+        return sb.toString();
     }
 }

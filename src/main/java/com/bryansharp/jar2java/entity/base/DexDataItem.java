@@ -31,9 +31,9 @@ public abstract class DexDataItem<T, U> extends DexItem {
         if (data != null) {
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i < refs.length; i++) {
-                stringBuilder.append(i).append(",").append(refs[i]).append(",");
+                stringBuilder.append("\n").append(i).append(",").append(refs[i]).append(",");
                 if (realData != null) {
-                    stringBuilder.append(realData[i]).append("|");
+                    stringBuilder.append(realData[i]);
                 }
             }
             LogUtils.log(stringBuilder.toString());
@@ -41,7 +41,7 @@ public abstract class DexDataItem<T, U> extends DexItem {
     }
 
     protected void printTitle() {
-        LogUtils.log(name + " : byteSize is " + byteSize + " : count is " + count + " : start is " + start + " : data is :");
+        LogUtils.log("\n" + name + " : byteSize is " + byteSize + " : count is " + count + " : start is " + start + " : data is :");
     }
 
     public void fillRefs() {
@@ -71,5 +71,8 @@ public abstract class DexDataItem<T, U> extends DexItem {
 
     public void parse3rdRealData(Map<String, DexDataItem> dataItems, byte[] dexData) {
 
+    }
+
+    public void parse4thRealData(Map<String, DexDataItem> dataItems, byte[] dexData) {
     }
 }

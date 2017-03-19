@@ -31,9 +31,5 @@ public class IntRefsItem extends DexDataItem<Integer, String> {
     }
 
 
-    @Override
-    public void printData() {
-        LogUtils.log(name + " : byteSize is " + byteSize + " : data is : unknown");
-    }
 
 }

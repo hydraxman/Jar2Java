@@ -10,7 +10,7 @@ public class MethodContent {
 
     @Override
     public String toString() {
-        return "MethodContent{" +
+        return "\nMethodContent{" +
                 "className='" + className + '\'' +
                 ", proto='" + proto + '\'' +
                 ", name='" + name + '\'' +

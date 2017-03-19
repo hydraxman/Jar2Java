@@ -11,7 +11,7 @@ public class ProtoRef {
 
     @Override
     public String toString() {
-        return "ProtoRef{" +
+        return "\nProtoRef{" +
                 "shortyIdx=" + shortyIdx +
                 ", returnTypeIdx=" + returnTypeIdx +
                 ", parametersOff=" + parametersOff +

@@ -152,6 +152,12 @@ public class DexData {
                 dataItem.parse3rdRealData(dataItems, dexData);
             }
         }
+        for (Map.Entry<String, DexDataItem> entry : dataItems.entrySet()) {
+            dataItem = entry.getValue();
+            if (dataItem.readyToFill()) {
+                dataItem.parse4thRealData(dataItems, dexData);
+            }
+        }
     }
 
     private DexDataItem getDexDataItem(String desc) {

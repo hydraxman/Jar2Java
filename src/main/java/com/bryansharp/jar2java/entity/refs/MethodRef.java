@@ -11,7 +11,7 @@ public class MethodRef {
 
     @Override
     public String toString() {
-        return "MethodRef{" +
+        return "\nMethodRef{" +
                 "classIdx=" + classIdx +
                 ", protoIdx=" + protoIdx +
                 ", nameIdx=" + nameIdx +

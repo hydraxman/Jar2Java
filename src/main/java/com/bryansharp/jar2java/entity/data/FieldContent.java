@@ -5,6 +5,15 @@ package com.bryansharp.jar2java.entity.data;
  */
 public class FieldContent {
     public String className;
-    public String proto;
+    public String fieldtype;
     public String name;
+
+    @Override
+    public String toString() {
+        return "\nFieldContent{" +
+                "className='" + className + '\'' +
+                ", fieldtype='" + fieldtype + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
