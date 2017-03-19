@@ -1,10 +1,12 @@
 package com.bryansharp.jar2java.entity.data;
 
 import com.bryansharp.jar2java.Utils;
+import com.bryansharp.jar2java.entity.base.DexDataItem;
 import com.bryansharp.jar2java.entity.base.DvmOpcode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by bsp on 17/3/19.
@@ -34,7 +36,7 @@ public class DexCode {
                 '}';
     }
 
-    public void parseInsns() {
+    public void parseInsns(Map<String, DexDataItem> dataItems) {
         int start = 0;
         DexCodeInsn dexCodeInsn;
         while (start < insnsRaw.length) {
@@ -46,7 +48,7 @@ public class DexCode {
             int len = dvmOpcode.opSize * 2;
             dexCodeInsn.data = new byte[len];
             System.arraycopy(insnsRaw, start, dexCodeInsn.data, 0, len);
-            dexCodeInsn.parseInsn();
+            dexCodeInsn.parseInsn(dataItems);
             start += len;
         }
     }

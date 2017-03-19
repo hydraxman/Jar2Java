@@ -30,12 +30,12 @@ public class ClassContent {
     }
 
     public static class ClassData {
+        public byte[] data;
+        public int sizeOfSizes;
         DexField[] staticFields;
         DexField[] instanceFields;
         DexMethod[] directMethods;
         DexMethod[] virtualMethods;
-        public byte[] data;
-        public int sizeOfSizes;
 
         public ClassData(int[] sizes) {
             this.staticFields = new DexField[sizes[0]];
@@ -49,8 +49,8 @@ public class ClassContent {
             MethodIdsItem mItem = (MethodIdsItem) dataItems.get(DexData.METHOD_IDS);
             int offset = fillFields(sizeOfSizes, staticFields, fItem);
             offset = fillFields(offset, instanceFields, fItem);
-            offset = fillMethods(offset, directMethods, mItem, dexData);
-            offset = fillMethods(offset, virtualMethods, mItem, dexData);
+            offset = fillMethods(offset, directMethods, mItem, dexData, dataItems);
+            offset = fillMethods(offset, virtualMethods, mItem, dexData, dataItems);
             if (data.length > offset) {
                 byte[] bytes = new byte[offset];
                 System.arraycopy(data, 0, bytes, 0, offset);
@@ -73,7 +73,7 @@ public class ClassContent {
             return offset;
         }
 
-        private int fillMethods(int offset, DexMethod[] methods, MethodIdsItem mItem, byte[] dexData) {
+        private int fillMethods(int offset, DexMethod[] methods, MethodIdsItem mItem, byte[] dexData, Map<String, DexDataItem> dataItems) {
             int valueOffset = 0;
             for (int i = 0; i < methods.length; i++) {
                 int[] result = Mutf8.readUnsignedLeb128(data, offset);
@@ -108,7 +108,7 @@ public class ClassContent {
                     code.insns[j] = Utils.u2ToInt(dexData, codeOff);
                     codeOff += 2;
                 }
-                code.parseInsns();
+                code.parseInsns(dataItems);
             }
             return offset;
         }

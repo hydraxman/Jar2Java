@@ -7,6 +7,7 @@ import com.bryansharp.jar2java.Utils;
  */
 public class DvmOpcode {
     public String form;
+    public String formForUse;
     public int opcode;
     public int opSize;
     public String pattern;
@@ -21,6 +22,9 @@ public class DvmOpcode {
             opSize = Integer.parseInt(c + "");
         }
         this.form = Utils.getPatternFormMap().get(pattern);
+        if (this.form != null) {
+            this.formForUse = form.replaceAll("[|\\s]+", "").replaceAll("op.", "op").replace("lo", "").replace("hi", "");
+        }
     }
 
     public DvmOpcode(int opcode, String pattern, String desc, String form) {
@@ -36,6 +40,7 @@ public class DvmOpcode {
                 ", pattern='" + pattern + '\'' +
                 ", desc='" + desc + '\'' +
                 ", form='" + form + '\'' +
+                ", formForUse='" + formForUse + '\'' +
                 '}';
     }
 }

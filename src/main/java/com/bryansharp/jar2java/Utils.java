@@ -608,4 +608,8 @@ public class Utils {
         }
         return sb.toString();
     }
+
+    public static Integer hexToInt(String digit) {
+        return Integer.parseInt(digit, 16);
+    }
 }
