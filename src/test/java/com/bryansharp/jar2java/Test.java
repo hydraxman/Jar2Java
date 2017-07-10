@@ -6,6 +6,6 @@ package com.bryansharp.jar2java;
 public class Test {
     @org.junit.Test
     public void testMain() throws Exception {
-        Main.main(new String[]{"/Users/bushaopeng/Desktop/AudienceNetwork-4.22.0/classes.jar"});
+        Main.main(new String[]{""});
     }
 }
