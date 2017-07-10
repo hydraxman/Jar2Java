@@ -15,13 +15,12 @@ public class Decompiler {
      */
     public static String decompile(String basePath, String internalTypeName) {
         // Load preferences
-
         boolean showDefaultConstructor = true;
         boolean realignmentLineNumber = true;
         boolean showPrefixThis = false;
         boolean mergeEmptyLines = false;
         boolean unicodeEscape = false;
-        boolean showLineNumbers = false;
+        boolean showLineNumbers = true;
         boolean showMetadata = false;
 
         // Create preferences
