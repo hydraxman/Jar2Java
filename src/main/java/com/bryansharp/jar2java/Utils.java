@@ -1,5 +1,7 @@
 package com.bryansharp.jar2java;
 
+import java.io.File;
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +9,12 @@ import java.util.Map;
  * Created by bushaopeng on 17/1/24.
  */
 public class Utils {
+    public static HashMap<Integer, String> accCodeMap = new HashMap<>();
     static HashMap<Integer, String> opCodeMap = new HashMap<>();
+
+    public static String path2Classname(String entryName) {
+        return entryName.replace(File.separator, ".").replace(".class", "");
+    }
 
     public static Map<Integer, String> getOpMap() {
         if (opCodeMap.size() == 0) {
@@ -221,5 +228,84 @@ public class Utils {
             }
         }
         return opCodeMap;
+    }
+
+    public static Map<Integer, String> getAccCodeMap() {
+        if (accCodeMap.size() == 0) {
+            HashMap<String, Integer> map = new HashMap<>();
+            map.put("ACC_PUBLIC", 1);
+            map.put("ACC_PRIVATE", 2);
+            map.put("ACC_PROTECTED", 4);
+            map.put("ACC_STATIC", 8);
+            map.put("ACC_FINAL", 16);
+            map.put("ACC_SUPER", 32);
+            map.put("ACC_SYNCHRONIZED", 32);
+            map.put("ACC_VOLATILE", 64);
+            map.put("ACC_BRIDGE", 64);
+            map.put("ACC_VARARGS", 128);
+            map.put("ACC_TRANSIENT", 128);
+            map.put("ACC_NATIVE", 256);
+            map.put("ACC_INTERFACE", 512);
+            map.put("ACC_ABSTRACT", 1024);
+            map.put("ACC_STRICT", 2048);
+            map.put("ACC_SYNTHETIC", 4096);
+            map.put("ACC_ANNOTATION", 8192);
+            map.put("ACC_ENUM", 16384);
+            map.put("ACC_DEPRECATED", 131072);
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                accCodeMap.put(entry.getValue(), entry.getKey());
+            }
+        }
+        return accCodeMap;
+    }
+
+    public static String accCode2String(int access) {
+        StringBuilder builder = new StringBuilder();
+        Map<Integer, String> map = getAccCodeMap();
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if ((entry.getKey().intValue() & access) > 0) {
+                //此处如果使用|作为分隔符会导致编译报错 因此改用斜杠
+                builder.append('\\' + entry.getValue() + "/ ");
+            }
+        }
+        return builder.toString();
+    }
+
+    public static String getOpName(int opCode) {
+        return getOpMap().get(opCode);
+    }
+
+    public static void logEach(Object... msg) {
+        for (Object m : msg) {
+            try {
+                if (m != null) {
+                    if (m.getClass().isArray()) {
+                        log("[");
+                        int length = Array.getLength(m);
+                        if (length > 0) {
+                            for (int i = 0; i < length; i++) {
+                                Object get = Array.get(m, i);
+                                if (get != null) {
+                                    log(get + "\t");
+                                } else {
+                                    log("null\t");
+                                }
+                            }
+                        }
+                        log("]\t");
+                    } else {
+                        log(m + "\t");
+                    }
+                } else {
+                    log("null\t");
+                }
+            } catch (Exception e) {
+            }
+        }
+        log("\n");
+    }
+
+    public static void log(Object msg) {
+        System.out.print(msg);
     }
 }

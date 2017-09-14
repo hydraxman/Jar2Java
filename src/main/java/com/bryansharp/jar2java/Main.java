@@ -16,6 +16,10 @@ public class Main {
     private static File baseDir;
 
     public static void main(String[] args) {
+        JarAnalyzer jarAnalyzer = new JarAnalyzer();
+        if (jarAnalyzer.analyzeAar("/Users/bushaopeng/IdeaProjects/Jar2Java/mobpowerlib-release.aar")) {
+            return;
+        }
         if (args == null || args.length < 1) {
             log("please specify a jar file");
             return;
