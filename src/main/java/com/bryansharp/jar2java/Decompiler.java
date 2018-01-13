@@ -9,18 +9,18 @@ public class Decompiler {
     /**
      * Actual call to the native lib.
      *
-     * @param basePath          Path to the root of the classpath, either a path to a directory or a path to a jar file.
-     * @param internalTypeName  internal name of the type.
+     * @param basePath         Path to the root of the classpath, either a path to a directory or a path to a jar file.
+     * @param internalTypeName internal name of the type.
      * @return Decompiled class text.
      */
     public static String decompile(String basePath, String internalTypeName) {
         // Load preferences
-        boolean showDefaultConstructor = true;
+        boolean showDefaultConstructor = false;
         boolean realignmentLineNumber = true;
         boolean showPrefixThis = false;
-        boolean mergeEmptyLines = false;
+        boolean mergeEmptyLines = true;
         boolean unicodeEscape = false;
-        boolean showLineNumbers = true;
+        boolean showLineNumbers = false;
         boolean showMetadata = false;
 
         // Create preferences
