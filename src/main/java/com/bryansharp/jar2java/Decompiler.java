@@ -1,6 +1,5 @@
 package com.bryansharp.jar2java;
 
-import jd.commonide.preferences.IdePreferences;
 
 /**
  * Created by bushaopeng on 17/1/6.
@@ -21,14 +20,14 @@ public class Decompiler {
         boolean mergeEmptyLines = true;
         boolean unicodeEscape = false;
         boolean showLineNumbers = false;
-        boolean showMetadata = false;
+        boolean showMetadata = true;
 
         // Create preferences
-        IdePreferences preferences = new IdePreferences(
+        Jar2JavaPreferences preferences = new Jar2JavaPreferences(
                 showDefaultConstructor, realignmentLineNumber, showPrefixThis,
                 mergeEmptyLines, unicodeEscape, showLineNumbers, showMetadata);
 
         // Decompile
-        return IdeDecompiler.decompile(preferences, basePath, internalTypeName);
+        return Jar2JavaDecompiler.decompile(preferences, basePath, internalTypeName);
     }
 }
