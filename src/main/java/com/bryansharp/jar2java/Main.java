@@ -55,8 +55,13 @@ public class Main {
             ZipEntry zipEntry = entries.nextElement();
             String name = zipEntry.getName();
             if (name.endsWith(".class")) {
-                log("start to decompile class " + name);
+                //内部类直接跳过
+                if (name.contains("$")) {
+                    log("jump inner class " + name);
+                    continue;
+                }
                 String result = null;
+                log("start to decompile class " + name);
                 try {
                     result = Decompiler.decompile(jarFullPath, name);
                     stringToClassFile(name, result);
