@@ -16,6 +16,18 @@ public class Main {
     private static File baseDir;
 
     public static void main(String[] args) {
+//        AidlProcessor processor = new AidlProcessor();
+//        if (processor.process("/Users/bushaopeng/Desktop/myGit/JDroid/src/main/java")) {
+//            return;
+//        }
+//        JavapJarParser jarParser = new JavapJarParser();
+//        if (jarParser.parse("/Users/bushaopeng/IdeaProjects/Jar2Java/classes.jar")) {
+//            return;
+//        }
+//        JarAnalyzer jarAnalyzer = new JarAnalyzer();
+//        if (jarAnalyzer.analyzeAar("/Users/bushaopeng/IdeaProjects/Jar2Java/mobpowerlib-release.aar")) {
+//            return;
+//        }
         if (args == null || args.length < 1) {
             log("please specify a jar file");
             return;
