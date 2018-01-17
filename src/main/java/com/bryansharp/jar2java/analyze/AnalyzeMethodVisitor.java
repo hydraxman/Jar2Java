@@ -1,4 +1,6 @@
-package com.bryansharp.jar2java;
+package com.bryansharp.jar2java.analyze;
+
+import com.bryansharp.jar2java.Utils;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;

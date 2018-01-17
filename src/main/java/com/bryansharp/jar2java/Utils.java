@@ -16,6 +16,10 @@ public class Utils {
         return entryName.replace(File.separator, ".").replace(".class", "");
     }
 
+    public static String classname2Path(String oldClassname) {
+        return oldClassname.replace(".", "/");
+    }
+
     public static Map<Integer, String> getOpMap() {
         if (opCodeMap.size() == 0) {
             HashMap<String, Integer> map = new HashMap<>();
@@ -280,32 +284,38 @@ public class Utils {
             try {
                 if (m != null) {
                     if (m.getClass().isArray()) {
-                        log("[");
+                        logInline("[");
                         int length = Array.getLength(m);
                         if (length > 0) {
                             for (int i = 0; i < length; i++) {
                                 Object get = Array.get(m, i);
                                 if (get != null) {
-                                    log(get + "\t");
+                                    logInline(get + "\t");
                                 } else {
-                                    log("null\t");
+                                    logInline("null\t");
                                 }
                             }
                         }
-                        log("]\t");
+                        logInline("]\t");
                     } else {
-                        log(m + "\t");
+                        logInline(m + "\t");
                     }
                 } else {
-                    log("null\t");
+                    logInline("null\t");
                 }
             } catch (Exception e) {
             }
         }
-        log("\n");
+        logInline("\n");
     }
 
     public static void log(Object msg) {
+        System.out.println(msg);
+    }
+
+    public static void logInline(Object msg) {
         System.out.print(msg);
     }
+
+
 }

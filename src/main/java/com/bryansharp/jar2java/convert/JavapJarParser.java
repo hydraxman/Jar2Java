@@ -1,4 +1,4 @@
-package com.bryansharp.jar2java;
+package com.bryansharp.jar2java.convert;
 
 import org.apache.commons.io.IOUtils;
 
