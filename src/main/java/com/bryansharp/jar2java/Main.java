@@ -1,10 +1,14 @@
 package com.bryansharp.jar2java;
 
+import com.bryansharp.jar2java.analyze.JarAnalyzer;
+import com.bryansharp.jar2java.convert.Decompiler;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -24,10 +28,7 @@ public class Main {
 //        if (jarParser.parse("/Users/bushaopeng/IdeaProjects/Jar2Java/classes.jar")) {
 //            return;
 //        }
-//        JarAnalyzer jarAnalyzer = new JarAnalyzer();
-//        if (jarAnalyzer.analyzeAar("/Users/bushaopeng/IdeaProjects/Jar2Java/mobpowerlib-release.aar")) {
-//            return;
-//        }
+
         if (args == null || args.length < 1) {
             log("please specify a jar file");
             return;
@@ -42,7 +43,7 @@ public class Main {
             if (paths.size() > 0) {
                 initBuildPath();
                 for (String jarFile : paths) {
-                    printJar(jarFile);
+                    decompileJar(jarFile);
                 }
             }
         } catch (Exception e) {
@@ -60,7 +61,19 @@ public class Main {
         return !(jarPath == null || !jarPath.endsWith(".jar") || !new File(jarPath).exists());
     }
 
-    private static void printJar(String jarFullPath) throws IOException {
+    private static void decompileJar(String jarFullPath) throws IOException {
+        boolean needRename = true;
+        if (needRename) {
+            JarAnalyzer jarAnalyzer = new JarAnalyzer();
+
+            Map<String, String> renameMap = jarAnalyzer.getRenameMap(jarFullPath);
+            for (Map.Entry<String, String> entry : renameMap.entrySet()) {
+                Utils.log(entry.getKey() + "->" + entry.getValue());
+            }
+            File file = jarAnalyzer.renameClassInJar(jarFullPath, renameMap);
+            jarFullPath = file.getAbsolutePath();
+        }
+
         ZipFile zipFile = new ZipFile(jarFullPath);
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {

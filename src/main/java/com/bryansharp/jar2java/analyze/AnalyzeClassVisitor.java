@@ -1,8 +1,11 @@
-package com.bryansharp.jar2java;
+package com.bryansharp.jar2java.analyze;
+
+import com.bryansharp.jar2java.Utils;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
@@ -10,8 +13,12 @@ import org.objectweb.asm.MethodVisitor;
  * Created by bushaopeng on 17/9/14.
  */
 public class AnalyzeClassVisitor implements ClassVisitor {
-    public AnalyzeClassVisitor(String className) {
+    String className;
+    ClassVisitor classVisitor;
 
+    public AnalyzeClassVisitor(String className, ClassWriter classWriter) {
+        this.className = className;
+        this.classVisitor = classWriter;
     }
 
     @Override
