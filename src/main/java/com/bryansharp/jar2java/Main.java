@@ -28,7 +28,10 @@ public class Main {
 //        if (jarParser.parse("/Users/bushaopeng/IdeaProjects/Jar2Java/classes.jar")) {
 //            return;
 //        }
-
+        JarAnalyzer jarAnalyzer = new JarAnalyzer();
+        if (jarAnalyzer.getReproguardMapping(args[0]) != null) {
+            return;
+        }
         if (args == null || args.length < 1) {
             log("please specify a jar file");
             return;

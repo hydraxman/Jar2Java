@@ -3,6 +3,7 @@ package com.bryansharp.jar2java;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -11,6 +12,59 @@ import java.util.Map;
 public class Utils {
     public static HashMap<Integer, String> accCodeMap = new HashMap<>();
     static HashMap<Integer, String> opCodeMap = new HashMap<>();
+    static HashSet<String> keywords = new HashSet<>();
+
+    static {
+        keywords.add("do");
+        keywords.add("if");
+        keywords.add("for");
+        keywords.add("int");
+        keywords.add("new");
+        keywords.add("try");
+        keywords.add("byte");
+        keywords.add("case");
+        keywords.add("char");
+        keywords.add("else");
+        keywords.add("goto");
+        keywords.add("long");
+        keywords.add("this");
+        keywords.add("void");
+        keywords.add("break");
+        keywords.add("catch");
+        keywords.add("class");
+        keywords.add("const");
+        keywords.add("final");
+        keywords.add("float");
+        keywords.add("short");
+        keywords.add("super");
+        keywords.add("throw");
+        keywords.add("while");
+        keywords.add("double");
+        keywords.add("import");
+        keywords.add("native");
+        keywords.add("public");
+        keywords.add("return");
+        keywords.add("static");
+        keywords.add("switch");
+        keywords.add("throws");
+        keywords.add("boolean");
+        keywords.add("default");
+        keywords.add("extends");
+        keywords.add("finally");
+        keywords.add("package");
+        keywords.add("private");
+        keywords.add("abstract");
+        keywords.add("continue");
+        keywords.add("strictfp");
+        keywords.add("volatile");
+        keywords.add("interface");
+        keywords.add("protected");
+        keywords.add("transient");
+        keywords.add("implements");
+        keywords.add("instanceof");
+        keywords.add("synchronized");
+
+    }
 
     public static String path2Classname(String entryName) {
         return entryName.replace(File.separator, ".").replace(".class", "");
@@ -317,5 +371,17 @@ public class Utils {
         System.out.print(msg);
     }
 
+    public static boolean isProguardedName(String simpleName) {
+        if (simpleName.matches("[a-z]{1,2}")) {
+            return true;
+        }
+        if (Utils.isKeyWord(simpleName)) {
+            return true;
+        }
+        return false;
+    }
 
+    public static boolean isKeyWord(String simpleName) {
+        return keywords.contains(simpleName);
+    }
 }

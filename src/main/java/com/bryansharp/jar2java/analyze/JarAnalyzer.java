@@ -1,5 +1,6 @@
 package com.bryansharp.jar2java.analyze;
 
+import com.bryansharp.jar2java.TextFileWritter;
 import com.bryansharp.jar2java.Utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -116,7 +117,7 @@ public class JarAnalyzer {
         return null;
     }
 
-    private byte[] renameClass(String className, byte[] sourceClassBytes, final Map<String, String> renameMap) {
+    private byte[] renameClass(final String className, byte[] sourceClassBytes, final Map<String, String> renameMap) {
 
         Utils.log("className: " + className + "原大小：" + sourceClassBytes.length);
         final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -137,9 +138,9 @@ public class JarAnalyzer {
                         public Object invoke(Object proxy1, Method method1, Object[] args1) throws Throwable {
                             boolean replaceInArgs1 = replaceInArgs(method1, args1, renameMap);
                             Object ret = method1.invoke(invoke, args1);
-//                            if (replaceInArgs1) {
-//                                logProxy(method1, args1, ret, 1);
-//                            }
+                            if (replaceInArgs1) {
+                                logProxy(method1, args1, ret, 1);
+                            }
                             return ret;
                         }
                     });
@@ -171,9 +172,39 @@ public class JarAnalyzer {
                         replaced = true;
                     } else {
                         if (args[i] instanceof String) {
-                            String name = (String) args[i];
-                            if (name.contains(path)) {
-                                args[i] = name.replace(path, newPath);
+                            String signiture = (String) args[i];
+                            if (signiture.contains(path)) {
+                                StringBuilder builder = new StringBuilder();
+                                boolean seeNext = false;
+                                Object appendObj = null;
+                                for (int charPos = 0; charPos < signiture.length(); charPos++) {
+                                    if (seeNext) {
+                                        seeNext = false;
+                                        int endIndex = signiture.indexOf(';', charPos);
+                                        if (endIndex < 0) {
+                                            // fixme double L logic
+                                            appendObj = signiture.charAt(charPos);
+                                        } else {
+                                            String maybeClassRef = signiture.substring(charPos, endIndex);
+                                            charPos = endIndex - 1;
+                                            if (!path.equals(maybeClassRef)) {
+                                                appendObj = maybeClassRef;
+                                            } else {
+                                                appendObj = newPath;
+                                            }
+                                        }
+                                    } else {
+                                        char cCar = signiture.charAt(charPos);
+                                        if (cCar == 'L') {
+                                            seeNext = true;
+                                        }
+                                        appendObj = cCar;
+                                    }
+                                    builder.append(appendObj);
+                                }
+                                String newSignture = builder.toString();
+                                replaced = !newSignture.equals(args[i]);
+                                args[i] = newSignture;
                             }
                         }
                     }
@@ -217,7 +248,7 @@ public class JarAnalyzer {
                 if (entryName.endsWith(".class")) {
                     className = Utils.path2Classname(entryName);
                     String simpleName = className.substring(className.lastIndexOf('.') + 1);
-                    if (isProguardedName(simpleName)) {
+                    if (Utils.isProguardedName(simpleName)) {
                         map.put(className, getNewClassName(className, simpleName));
                     }
                 }
@@ -236,10 +267,68 @@ public class JarAnalyzer {
         return className.substring(0, className.lastIndexOf('.') + 1) + simpleName.toUpperCase() + hex;
     }
 
-    private boolean isProguardedName(String simpleName) {
-        if (simpleName.matches("[a-z]{1,2}")) {
-            return true;
+    public Map<String, String> getReproguardMapping(String jarPath) {
+        Map<String, String> renameMap = new HashMap<>();
+        try {
+            JarFile file = new JarFile(new File(jarPath));
+            Enumeration<JarEntry> enumeration = file.entries();
+            while (enumeration.hasMoreElements()) {
+                JarEntry jarEntry = enumeration.nextElement();
+                InputStream inputStream = file.getInputStream(jarEntry);
+                String entryName = jarEntry.getName();
+                String className;
+                byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
+                if (entryName.endsWith(".class")) {
+                    className = Utils.path2Classname(entryName);
+                    String newClassname = getReproguardClassname(className);
+                    TextFileWritter.getDefaultWritter().println(className + (newClassname != null ? " -> " + newClassname : ""));
+//                    analyzeClassNames(className, sourceClassBytes);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return false;
+        TextFileWritter.getDefaultWritter().close();
+        return renameMap;
+    }
+
+    private String getReproguardClassname(String className) {
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean changed = false;
+        String[] split = className.split("\\.");
+        int count = 0;
+        for (String s : split) {
+            if (count == split.length - 1) {
+                if (Utils.isProguardedName(s)) {
+                    changed = true;
+                    String suffix = DigestUtils.md5Hex(className).substring(0, 4);
+                    stringBuilder.append(s.toUpperCase()).append(suffix);
+                } else {
+                    stringBuilder.append(".");
+                }
+            } else {
+                if (Utils.isKeyWord(s)) {
+                    changed = true;
+                    String suffix = DigestUtils.md5Hex(className).substring(0, 4);
+                    stringBuilder.append(s).append(suffix);
+                } else {
+                    stringBuilder.append(s);
+                }
+                stringBuilder.append(".");
+            }
+            count++;
+        }
+        if (changed) {
+            return stringBuilder.toString();
+        }
+        return null;
+    }
+
+    private void analyzeClassNames(String className, byte[] sourceClassBytes) {
+        Utils.log("className: " + className + "原大小：" + sourceClassBytes.length);
+        ClassVisitor adapter = new AnalyzeClassVisitor(className);
+        ClassReader cr = new ClassReader(sourceClassBytes);
+        //cr.accept(visitor, ClassReader.SKIP_DEBUG);
+        cr.accept(adapter, 0);
     }
 }

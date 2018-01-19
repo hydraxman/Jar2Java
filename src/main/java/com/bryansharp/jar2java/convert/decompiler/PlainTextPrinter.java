@@ -11,7 +11,7 @@ import jd.core.model.instruction.bytecode.instruction.Instruction;
 import jd.core.printer.Printer;
 
 public class PlainTextPrinter implements Printer {
-    protected static final String TAB = "  ";
+    protected static final String TAB = "    ";
     protected static final String NEWLINE = "\n";
 
     protected GuiPreferences preferences = null;
