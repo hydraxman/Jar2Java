@@ -5,7 +5,6 @@ import com.bryansharp.jar2java.Utils;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
@@ -14,11 +13,9 @@ import org.objectweb.asm.MethodVisitor;
  */
 public class AnalyzeClassVisitor implements ClassVisitor {
     String className;
-    ClassVisitor classVisitor;
 
-    public AnalyzeClassVisitor(String className, ClassWriter classWriter) {
+    public AnalyzeClassVisitor(String className) {
         this.className = className;
-        this.classVisitor = classWriter;
     }
 
     @Override
@@ -53,17 +50,18 @@ public class AnalyzeClassVisitor implements ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        Utils.logEach("visit", Utils.accCode2String(access), name, desc, signature, value);
-        return new AnalyzeFieldVisitor();
+        Utils.logEach("visitField", Utils.accCode2String(access), name, desc, signature, value);
+        return null;
     }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        return new AnalyzeMethodVisitor();
+        Utils.logEach("visitMethod", Utils.accCode2String(access), name, desc, signature, exceptions);
+        return null;
     }
 
     @Override
     public void visitEnd() {
-        Utils.logEach("visitEnd");
+//        Utils.logEach("visitEnd");
     }
 }

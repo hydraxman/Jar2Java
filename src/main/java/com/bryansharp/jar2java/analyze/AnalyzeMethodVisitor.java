@@ -28,17 +28,17 @@ public class AnalyzeMethodVisitor implements MethodVisitor {
 
     @Override
     public void visitAttribute(Attribute attribute) {
-        Utils.logEach("visitAttribute", attribute);
+//        Utils.logEach("visitAttribute", attribute);
     }
 
     @Override
     public void visitCode() {
-        Utils.logEach("visitCode");
+//        Utils.logEach("visitCode");
     }
 
     @Override
     public void visitFrame(int type, int nLocal, Object[] local, int nStack, Object[] stack) {
-        Utils.logEach("visitLabel", type);
+//        Utils.logEach("visitLabel", type);
     }
 
     @Override
