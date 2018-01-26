@@ -2,6 +2,7 @@ package com.bryansharp.jar2java;
 
 import com.bryansharp.jar2java.analyze.JarAnalyzer;
 import com.bryansharp.jar2java.convert.Decompiler;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,6 +13,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by bushaopeng on 17/1/6.
@@ -30,7 +35,7 @@ public class Main {
 //            return;
 //        }
 //        try {
-//            String stringInAMobi = decodeStringInAMobi("rtb-b7dJkfc=".getBytes("UTF-8"));
+//            String stringInAMobi = decodeStringInAMobi("".getBytes("UTF-8"));
 //            System.out.println(stringInAMobi);
 //            stringInAMobi = decodeStringInAMobi("qM3KeU1CoM1Bkl==".getBytes("UTF-8"));
 //            System.out.println(stringInAMobi);
@@ -52,6 +57,7 @@ public class Main {
 
 
 //        extractAllSources();
+//        filterJar();
         readAllConstant();
 //        Map<String, VisitedClass> visitedClassMap = jarAnalyzer.analyzeJar(args[0]);
 //        if (jarAnalyzer.extractSource(args[0])) {
@@ -88,16 +94,22 @@ public class Main {
 //        }
     }
 
+    private static void filterJar() {
+        String[] args;
+        args = new String[]{
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/classes2-dex2jar.jar"
+        };
+
+        JarAnalyzer jarAnalyzer = new JarAnalyzer();
+        for (String arg : args) {
+            jarAnalyzer.filterJar(arg);
+        }
+    }
+
     private static void extractAllSources() {
         String[] args;
-        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.2.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.1.1.4230.13.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.0.4230-adserverDebug.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.4.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.6.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.8.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.1.0.0.16.aar"
+        args = new String[]{
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/classes2-dex2jar.jar"
         };
 
         JarAnalyzer jarAnalyzer = new JarAnalyzer();
@@ -108,13 +120,15 @@ public class Main {
 
     private static void readAllConstant() {
         String[] args;
-        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.2.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.1.1.4230.13.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.0.4230-adserverDebug.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.4.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.6.aar",
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.1.0.0.16.aar"
+//        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.2.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.1.1.4230.13.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.0.4230-adserverDebug.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.4.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.6.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.1.0.0.16.aar"
+//        };
+        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/altamob-5.2.0.Q.jar"
         };
 
         JarAnalyzer jarAnalyzer = new JarAnalyzer();
@@ -260,6 +274,5 @@ public class Main {
         }
         return "";
     }
-
 
 }
