@@ -10,6 +10,7 @@ import com.bryansharp.jar2java.analyze.entity.VisitedMethod;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -41,7 +43,7 @@ public class JarAnalyzer {
                 if (!element.isDirectory()) {
                     if (entryName.endsWith(".jar")) {
                         File innerJar = unzipEntryToTemp(element, zipFile);
-                        analyzeJar(innerJar, analyzer);
+                        analyzeJar(innerJar.getAbsolutePath(), analyzer);
                     }
                 }
             }
@@ -52,55 +54,62 @@ public class JarAnalyzer {
     }
 
     public boolean extractSource(String path) {
+        if (path.endsWith(".jar")) {
+            extractSourceFromJar(path);
+        } else if (path.endsWith(".aar")) {
+            extractSourceFromAar(path);
+        }
+        return true;
+    }
+
+    private void extractSourceFromJar(String path) {
+        try {
+            initProjName(path, null);
+            Main.initBuildPath(projName);
+            Main.turnJarIntoJava(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void extractSourceFromAar(String path) {
         try {
             File file = new File(path);
             ZipFile zipFile = new ZipFile(file);
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            String name = file.getName();
-            String noSuffixName = name.substring(0, name.lastIndexOf('.'));
             while (entries.hasMoreElements()) {
                 ZipEntry element = entries.nextElement();
                 String entryName = element.getName();
                 if (!element.isDirectory()) {
                     if (entryName.endsWith(".jar")) {
                         File innerJar = unzipEntryToTemp(element, zipFile);
-                        Main.initBuildPath(noSuffixName);
-                        Main.turnJarIntoJava(innerJar.getAbsolutePath());
+                        extractSource(innerJar.getAbsolutePath());
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
     }
 
 
-    public Map<String, VisitedClass> analyzeJar(String path) {
+    private Map<String, VisitedClass> analyzeJar(String jarFilePath, ClassAnalyzer analyzer) {
         try {
-            ClassMethodAnalyzer analyzer = new ClassMethodAnalyzer();
-            return analyzeJar(new File(path), analyzer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private Map<String, VisitedClass> analyzeJar(File jarFile, ClassAnalyzer analyzer) throws IOException {
-        Map<String, VisitedClass> visitedClasses = new HashMap<>();
-        JarFile file = new JarFile(jarFile);
-        Enumeration<JarEntry> enumeration = file.entries();
-        while (enumeration.hasMoreElements()) {
-            JarEntry jarEntry = enumeration.nextElement();
-            InputStream inputStream = file.getInputStream(jarEntry);
-            String entryName = jarEntry.getName();
-            String className;
-            byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
-            if (entryName.endsWith(".class")) {
-                className = Utils.path2Classname(entryName);
-                analyzer.modifyClass(className, sourceClassBytes, visitedClasses);
+            File jarFile = new File(jarFilePath);
+            Map<String, VisitedClass> visitedClasses = new HashMap<>();
+            JarFile file = new JarFile(jarFile);
+            Enumeration<JarEntry> enumeration = file.entries();
+            while (enumeration.hasMoreElements()) {
+                JarEntry jarEntry = enumeration.nextElement();
+                InputStream inputStream = file.getInputStream(jarEntry);
+                String entryName = jarEntry.getName();
+                String className;
+                byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
+                if (entryName.endsWith(".class")) {
+                    className = Utils.path2Classname(entryName);
+                    analyzer.modifyClass(className, sourceClassBytes, visitedClasses);
+                }
             }
-        }
 
 //        analyzeClassRelation(visitedClasses);
 //        analyzeInvoke(visitedClasses);
@@ -111,7 +120,11 @@ public class JarAnalyzer {
 //
 //        listInvokeTree(className, "a(Lcom/google/android/finsky/be/c;)V", visitedClasses);
 
-        return visitedClasses;
+            return visitedClasses;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void analyzeClassRelation(Map<String, VisitedClass> visitedClasses) {
@@ -253,13 +266,61 @@ public class JarAnalyzer {
         ClassConstantAnalyzer analyzer = new ClassConstantAnalyzer();
         initProjName(arg, "contants");
         analyzer.setProjName(projName);
-        analyzeAar(arg, analyzer);
+        if (arg.endsWith(".aar")) {
+            analyzeAar(arg, analyzer);
+        } else if (arg.endsWith(".jar")) {
+            analyzeJar(arg, analyzer);
+        }
         TextFileWritter.getWritter(projName).close();
     }
 
     private void initProjName(String path, String suffix) {
         File file = new File(path);
         String name = file.getName();
-        this.projName = name.substring(0, name.lastIndexOf('.')) + "." + suffix;
+        if (suffix == null) {
+            this.projName = name.substring(0, name.lastIndexOf('.'));
+        } else {
+            this.projName = name.substring(0, name.lastIndexOf('.')) + "." + suffix;
+        }
+    }
+
+    public File filterJar(String path) {
+        try {
+            File jarFile = new File(path);
+            File outputJar = new File(jarFile.getParentFile(), "new-" + jarFile.getName());
+            if (outputJar.exists()) {
+                outputJar.delete();
+            }
+            JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(outputJar));
+            JarFile file = new JarFile(jarFile);
+            Enumeration<JarEntry> enumeration = file.entries();
+            while (enumeration.hasMoreElements()) {
+                JarEntry jarEntry = enumeration.nextElement();
+                InputStream inputStream = file.getInputStream(jarEntry);
+
+                String entryName = jarEntry.getName();
+                byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
+                boolean entryNamePut = false;
+                if (!entryName.startsWith("com/mobi/") && !entryName.equals("com/")) {
+                    continue;
+                }
+                if (entryName.endsWith(".class")) {
+                    ZipEntry zipEntry = new ZipEntry(entryName);
+                    jarOutputStream.putNextEntry(zipEntry);
+                    entryNamePut = true;
+                    jarOutputStream.write(sourceClassBytes);
+                }
+                if (!entryNamePut) {
+                    ZipEntry zipEntry = new ZipEntry(entryName);
+                    jarOutputStream.putNextEntry(zipEntry);
+                }
+                jarOutputStream.closeEntry();
+            }
+            jarOutputStream.close();
+            return outputJar;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

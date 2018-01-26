@@ -81,7 +81,7 @@ public class ClassConstantAnalyzer implements ClassAnalyzer {
             case "visitLdcInsn":
                 if (args[0] instanceof String) {
                     String str = (String) args[0];
-                    if (projName.contains("5.0.0.6") || projName.contains("5.0.0.8") || projName.contains("5.0.0.8") || projName.contains("5.1.0")) {
+                    if (projName.contains("5.0.0.6") || projName.contains("5.0.0.8") || projName.contains("5.0.0.5") || projName.contains("5.1.0") || projName.contains("5.2.0")) {
                         if (str.toLowerCase().contains("android")) {
                             return;
                         }
