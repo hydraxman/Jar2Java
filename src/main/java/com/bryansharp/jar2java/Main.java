@@ -1,6 +1,7 @@
 package com.bryansharp.jar2java;
 
 import com.bryansharp.jar2java.analyze.JarAnalyzer;
+import com.bryansharp.jar2java.analyze.JarModifier;
 import com.bryansharp.jar2java.convert.Decompiler;
 
 import java.io.File;
@@ -29,7 +30,8 @@ public class Main {
 //            return;
 //        }
         JarAnalyzer jarAnalyzer = new JarAnalyzer();
-        if (jarAnalyzer.getReproguardMapping(args[0]) != null) {
+//        Map<String, VisitedClass> visitedClassMap = jarAnalyzer.analyzeJar(args[0]);
+        if (jarAnalyzer.extractSource(args[0])) {
             return;
         }
         if (args == null || args.length < 1) {
@@ -46,7 +48,16 @@ public class Main {
             if (paths.size() > 0) {
                 initBuildPath();
                 for (String jarFile : paths) {
-                    decompileJar(jarFile);
+                    String jarFullPath = jarFile;
+                    boolean needRename = false;
+                    if (needRename) {
+                        JarModifier jarModifier = new JarModifier();
+
+                        Map<String, String> renameMap = jarModifier.getRenameMap(jarFullPath);
+                        File file = jarModifier.renameClassInJar(jarFullPath, renameMap);
+                        jarFullPath = file.getAbsolutePath();
+                    }
+                    turnJarIntoJava(jarFullPath);
                 }
             }
         } catch (Exception e) {
@@ -54,7 +65,7 @@ public class Main {
         }
     }
 
-    private static void initBuildPath() {
+    public static void initBuildPath() {
         String dirName = getOutputFileDirName();
         baseDir = new File(dirName);
         baseDir.mkdirs();
@@ -64,19 +75,8 @@ public class Main {
         return !(jarPath == null || !jarPath.endsWith(".jar") || !new File(jarPath).exists());
     }
 
-    private static void decompileJar(String jarFullPath) throws IOException {
-        boolean needRename = true;
-        if (needRename) {
-            JarAnalyzer jarAnalyzer = new JarAnalyzer();
 
-            Map<String, String> renameMap = jarAnalyzer.getRenameMap(jarFullPath);
-            for (Map.Entry<String, String> entry : renameMap.entrySet()) {
-                Utils.log(entry.getKey() + "->" + entry.getValue());
-            }
-            File file = jarAnalyzer.renameClassInJar(jarFullPath, renameMap);
-            jarFullPath = file.getAbsolutePath();
-        }
-
+    public static void turnJarIntoJava(String jarFullPath) throws IOException {
         ZipFile zipFile = new ZipFile(jarFullPath);
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
