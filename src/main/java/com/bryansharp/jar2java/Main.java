@@ -1,15 +1,15 @@
 package com.bryansharp.jar2java;
 
 import com.bryansharp.jar2java.analyze.JarAnalyzer;
-import com.bryansharp.jar2java.analyze.JarModifier;
 import com.bryansharp.jar2java.convert.Decompiler;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -29,44 +29,107 @@ public class Main {
 //        if (jarParser.parse("/Users/bushaopeng/IdeaProjects/Jar2Java/classes.jar")) {
 //            return;
 //        }
-        JarAnalyzer jarAnalyzer = new JarAnalyzer();
-//        Map<String, VisitedClass> visitedClassMap = jarAnalyzer.analyzeJar(args[0]);
-        if (jarAnalyzer.extractSource(args[0])) {
-            return;
-        }
-        if (args == null || args.length < 1) {
-            log("please specify a jar file");
-            return;
-        }
-        try {
-            ArrayList<String> paths = new ArrayList<>();
-            for (String jarFile : args) {
-                if (checkJar(jarFile)) {
-                    paths.add(jarFile);
-                }
-            }
-            if (paths.size() > 0) {
-                initBuildPath();
-                for (String jarFile : paths) {
-                    String jarFullPath = jarFile;
-                    boolean needRename = false;
-                    if (needRename) {
-                        JarModifier jarModifier = new JarModifier();
+//        try {
+//            String stringInAMobi = decodeStringInAMobi("rtb-b7dJkfc=".getBytes("UTF-8"));
+//            System.out.println(stringInAMobi);
+//            stringInAMobi = decodeStringInAMobi("qM3KeU1CoM1Bkl==".getBytes("UTF-8"));
+//            System.out.println(stringInAMobi);
+//            stringInAMobi = decodeStringInAMobi("q93KbaJKq7S=".getBytes("UTF-8"));
+//            System.out.println(stringInAMobi);
+//            stringInAMobi = decodeStringInAMobi("q737kaFgkaT=".getBytes("UTF-8"));
+//            System.out.println(stringInAMobi);
+//            stringInAMobi = decodeStringInAMobi("qM3EkSFgHM1-rM1iWX==".getBytes("UTF-8"));
+//            System.out.println(stringInAMobi);
+//            stringInAMobi = decodeStringInAMobi("rtY-q7AjkVYjHBbzHBlErt/KotAEDzuulKwubK3Re-3/Nmk1bX==".getBytes("UTF-8"));
+//            System.out.println(stringInAMobi);
+//            stringInAMobi = decodeStringInAMobi("rtY-q7AjkVYjHBbzHBlErt/KotAEDzuulKwubK3RlebSbel=".getBytes("UTF-8"));
+//            System.out.println(stringInAMobi);
+//            stringInAMobi = decodeStringInAMobi("WClPrf3KafriDBuQqX==".getBytes("UTF-8"));
+//            System.out.println(stringInAMobi);
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
 
-                        Map<String, String> renameMap = jarModifier.getRenameMap(jarFullPath);
-                        File file = jarModifier.renameClassInJar(jarFullPath, renameMap);
-                        jarFullPath = file.getAbsolutePath();
-                    }
-                    turnJarIntoJava(jarFullPath);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+//        extractAllSources();
+        readAllConstant();
+//        Map<String, VisitedClass> visitedClassMap = jarAnalyzer.analyzeJar(args[0]);
+//        if (jarAnalyzer.extractSource(args[0])) {
+//            return;
+//        }
+//        if (args == null || args.length < 1) {
+//            log("please specify a jar file");
+//            return;
+//        }
+//        try {
+//            ArrayList<String> paths = new ArrayList<>();
+//            for (String jarFile : args) {
+//                if (checkJar(jarFile)) {
+//                    paths.add(jarFile);
+//                }
+//            }
+//            if (paths.size() > 0) {
+//                initBuildPath();
+//                for (String jarFile : paths) {
+//                    String jarFullPath = jarFile;
+//                    boolean needRename = false;
+//                    if (needRename) {
+//                        JarModifier jarModifier = new JarModifier();
+//
+//                        Map<String, String> renameMap = jarModifier.getRenameMap(jarFullPath);
+//                        File file = jarModifier.renameClassInJar(jarFullPath, renameMap);
+//                        jarFullPath = file.getAbsolutePath();
+//                    }
+//                    turnJarIntoJava(jarFullPath);
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    private static void extractAllSources() {
+        String[] args;
+        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.2.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.1.1.4230.13.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.0.4230-adserverDebug.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.4.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.6.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.8.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.1.0.0.16.aar"
+        };
+
+        JarAnalyzer jarAnalyzer = new JarAnalyzer();
+        for (String arg : args) {
+            jarAnalyzer.extractSource(arg);
         }
     }
 
-    public static void initBuildPath() {
-        String dirName = getOutputFileDirName();
+    private static void readAllConstant() {
+        String[] args;
+        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.2.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.1.1.4230.13.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.0.4230-adserverDebug.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.4.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.6.aar",
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.1.0.0.16.aar"
+        };
+
+        JarAnalyzer jarAnalyzer = new JarAnalyzer();
+        for (String arg : args) {
+            jarAnalyzer.readAllConstant(arg);
+        }
+    }
+
+    public static void initBuildPath(String defaultName) {
+        String dirName = null;
+        if (StringUtils.isEmpty(defaultName)) {
+            dirName = getOutputFileDirName();
+        } else {
+            dirName = "build/" + defaultName;
+        }
         baseDir = new File(dirName);
         baseDir.mkdirs();
     }
@@ -158,5 +221,45 @@ public class Main {
         System.out.print("\n");
         logDiv();
     }
+
+    public static String decodeStringInAMobi(String source) {
+        try {
+            return decodeStringInAMobi(source.getBytes("UTF-8"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String decodeStringInAMobi(byte[] source) {
+        try {
+            int len = source.length;
+            int j = 0;
+            int k = 0;
+            int m = 0;
+            byte[] decode = new byte[len * 3 / 4];
+            byte[] dict = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 13, 42, 5,
+                    58, 21, 62, 63, 15, 38, 32, 7, 0, 0, 0, 0, 0, 0, 0, 61, 39, 35, 11, 46, 9, 56, 27, 48, 33,
+                    52, 34, 54, 19, 44, 47, 40, 31, 4, 8, 6, 2, 29, 0, 57, 59, 0, 0, 0, 0, 0, 0, 23, 17, 12, 49,
+                    20, 55, 50, 43, 51, 41, 25, 16, 53, 18, 26, 30, 28, 24, 3, 22, 1, 60, 45, 10, 14, 37, 0, 0, 0, 0, 0};
+
+            while ((j + 4 <= len) &&
+                    ((k = dict[(source[j] & 0xFF)] << 18 |
+                            dict[(source[(j + 1)] & 0xFF)] << 12 |
+                            dict[(source[(j + 2)] & 0xFF)] << 6 |
+                            dict[(source[(j + 3)] & 0xFF)]) >= 0)) {
+                decode[(m + 2)] = ((byte) k);
+                decode[(m + 1)] = ((byte) (k >> 8));
+                decode[m] = ((byte) (k >> 16));
+                m += 3;
+                j += 4;
+            }
+            return new String(decode, "US-ASCII").trim();
+        } catch (Exception localException) {
+        }
+        return "";
+    }
+
 
 }

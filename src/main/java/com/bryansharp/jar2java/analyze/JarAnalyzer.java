@@ -1,6 +1,7 @@
 package com.bryansharp.jar2java.analyze;
 
 import com.bryansharp.jar2java.Main;
+import com.bryansharp.jar2java.TextFileWritter;
 import com.bryansharp.jar2java.Utils;
 import com.bryansharp.jar2java.analyze.entity.InvokedMethod;
 import com.bryansharp.jar2java.analyze.entity.VisitedClass;
@@ -27,7 +28,9 @@ import static com.bryansharp.jar2java.Utils.unzipEntryToTemp;
  */
 public class JarAnalyzer {
 
-    public boolean analyzeAar(String path) {
+    private String projName;
+
+    public boolean analyzeAar(String path, ClassAnalyzer analyzer) {
         try {
             File file = new File(path);
             ZipFile zipFile = new ZipFile(file);
@@ -38,7 +41,7 @@ public class JarAnalyzer {
                 if (!element.isDirectory()) {
                     if (entryName.endsWith(".jar")) {
                         File innerJar = unzipEntryToTemp(element, zipFile);
-                        analyzeJar(innerJar);
+                        analyzeJar(innerJar, analyzer);
                     }
                 }
             }
@@ -47,18 +50,21 @@ public class JarAnalyzer {
         }
         return true;
     }
+
     public boolean extractSource(String path) {
         try {
             File file = new File(path);
             ZipFile zipFile = new ZipFile(file);
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            String name = file.getName();
+            String noSuffixName = name.substring(0, name.lastIndexOf('.'));
             while (entries.hasMoreElements()) {
                 ZipEntry element = entries.nextElement();
                 String entryName = element.getName();
                 if (!element.isDirectory()) {
                     if (entryName.endsWith(".jar")) {
                         File innerJar = unzipEntryToTemp(element, zipFile);
-                        Main.initBuildPath();
+                        Main.initBuildPath(noSuffixName);
                         Main.turnJarIntoJava(innerJar.getAbsolutePath());
                     }
                 }
@@ -72,14 +78,15 @@ public class JarAnalyzer {
 
     public Map<String, VisitedClass> analyzeJar(String path) {
         try {
-            return analyzeJar(new File(path));
+            ClassMethodAnalyzer analyzer = new ClassMethodAnalyzer();
+            return analyzeJar(new File(path), analyzer);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private Map<String, VisitedClass> analyzeJar(File jarFile) throws IOException {
+    private Map<String, VisitedClass> analyzeJar(File jarFile, ClassAnalyzer analyzer) throws IOException {
         Map<String, VisitedClass> visitedClasses = new HashMap<>();
         JarFile file = new JarFile(jarFile);
         Enumeration<JarEntry> enumeration = file.entries();
@@ -91,19 +98,18 @@ public class JarAnalyzer {
             byte[] sourceClassBytes = IOUtils.toByteArray(inputStream);
             if (entryName.endsWith(".class")) {
                 className = Utils.path2Classname(entryName);
-                ClassMethodAnalyzer analyzer = new ClassMethodAnalyzer();
                 analyzer.modifyClass(className, sourceClassBytes, visitedClasses);
             }
         }
 
-        analyzeClassRelation(visitedClasses);
-        analyzeInvoke(visitedClasses);
+//        analyzeClassRelation(visitedClasses);
+//        analyzeInvoke(visitedClasses);
 
-        String className = "com.google.android.finsky.be.f";
-
-        listAllMethod(className, visitedClasses);
-
-        listInvokeTree(className, "a(Lcom/google/android/finsky/be/c;)V", visitedClasses);
+//        String className = "com.google.android.finsky.be.f";
+//
+//        listAllMethod(className, visitedClasses);
+//
+//        listInvokeTree(className, "a(Lcom/google/android/finsky/be/c;)V", visitedClasses);
 
         return visitedClasses;
     }
@@ -172,7 +178,14 @@ public class JarAnalyzer {
     private void listAllMethod(String className, Map<String, VisitedClass> visitedClasses) {
         Utils.log(className + " methods:");
         VisitedClass visitedClass = visitedClasses.get(className);
-        for (Map.Entry<String, VisitedMethod> entry : visitedClass.getMethods().entrySet()) {
+        if (visitedClass == null) {
+            return;
+        }
+        Map<String, VisitedMethod> methods = visitedClass.getMethods();
+        if (methods == null) {
+            return;
+        }
+        for (Map.Entry<String, VisitedMethod> entry : methods.entrySet()) {
             VisitedMethod visitedMethod = entry.getValue();
             Utils.log("--> " + visitedMethod.getKey());
         }
@@ -236,4 +249,17 @@ public class JarAnalyzer {
 
     }
 
+    public void readAllConstant(String arg) {
+        ClassConstantAnalyzer analyzer = new ClassConstantAnalyzer();
+        initProjName(arg, "contants");
+        analyzer.setProjName(projName);
+        analyzeAar(arg, analyzer);
+        TextFileWritter.getWritter(projName).close();
+    }
+
+    private void initProjName(String path, String suffix) {
+        File file = new File(path);
+        String name = file.getName();
+        this.projName = name.substring(0, name.lastIndexOf('.')) + "." + suffix;
+    }
 }
