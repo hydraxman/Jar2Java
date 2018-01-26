@@ -1,22 +1,17 @@
 package com.bryansharp.jar2java;
 
 import com.bryansharp.jar2java.analyze.JarAnalyzer;
+import com.bryansharp.jar2java.analyze.JarModifier;
 import com.bryansharp.jar2java.convert.Decompiler;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by bushaopeng on 17/1/6.
@@ -58,7 +53,8 @@ public class Main {
 
 //        extractAllSources();
 //        filterJar();
-        readAllConstant();
+//        readAllConstant();
+        modifyAar();
 //        Map<String, VisitedClass> visitedClassMap = jarAnalyzer.analyzeJar(args[0]);
 //        if (jarAnalyzer.extractSource(args[0])) {
 //            return;
@@ -92,6 +88,25 @@ public class Main {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    private static void modifyAar() {
+        String[] args;
+//        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.2.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.1.1.4230.13.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.0.4230-adserverDebug.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.4.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.8.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.6.aar",
+//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.1.0.0.16.aar"
+//        };
+        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.8.aar"};
+
+        JarModifier jarModifier = new JarModifier();
+        for (String arg : args) {
+            jarModifier.modifyAar(arg);
+        }
     }
 
     private static void filterJar() {
