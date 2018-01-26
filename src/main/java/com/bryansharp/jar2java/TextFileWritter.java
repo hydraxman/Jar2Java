@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +26,13 @@ public class TextFileWritter {
 
     public TextFileWritter(String name) {
         this.name = name;
-        this.file = new File(name + ".txt");
+        boolean needDate = false;
+        if (needDate) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyMMddHHmmss");
+            this.file = new File(name + "." + dateFormat.format(new Date()) + ".txt");
+        } else {
+            this.file = new File(name + ".txt");
+        }
         if (file.exists()) {
             file.delete();
         } else {
@@ -50,6 +58,7 @@ public class TextFileWritter {
     }
 
     public void println(Object msg) {
+        Utils.log(msg);
         try {
             if (msg == null) {
                 this.fileWritter.write("null");
@@ -65,6 +74,7 @@ public class TextFileWritter {
 
     public void close() {
         try {
+            this.fileWritter.flush();
             this.fileWritter.close();
         } catch (IOException e) {
             e.printStackTrace();
