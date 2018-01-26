@@ -13,6 +13,7 @@ import org.objectweb.asm.MethodVisitor;
  */
 public class AnalyzeClassVisitor implements ClassVisitor {
     String className;
+    private String source;
 
     public AnalyzeClassVisitor(String className) {
         this.className = className;
@@ -26,6 +27,7 @@ public class AnalyzeClassVisitor implements ClassVisitor {
     @Override
     public void visitSource(String source, String debug) {
         Utils.logEach("visitSource", source, debug);
+        this.source = source;
     }
 
     @Override
@@ -63,5 +65,9 @@ public class AnalyzeClassVisitor implements ClassVisitor {
     @Override
     public void visitEnd() {
 //        Utils.logEach("visitEnd");
+    }
+
+    public String getSource() {
+        return source;
     }
 }

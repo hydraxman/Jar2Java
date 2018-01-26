@@ -1,10 +1,19 @@
 package com.bryansharp.jar2java;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Created by bushaopeng on 17/1/24.
@@ -21,6 +30,7 @@ public class Utils {
         keywords.add("int");
         keywords.add("new");
         keywords.add("try");
+        keywords.add("assert");
         keywords.add("byte");
         keywords.add("case");
         keywords.add("char");
@@ -321,9 +331,21 @@ public class Utils {
         StringBuilder builder = new StringBuilder();
         Map<Integer, String> map = getAccCodeMap();
         for (Map.Entry<Integer, String> entry : map.entrySet()) {
-            if ((entry.getKey().intValue() & access) > 0) {
+            if ((entry.getKey() & access) > 0) {
                 //此处如果使用|作为分隔符会导致编译报错 因此改用斜杠
-                builder.append('\\' + entry.getValue() + "/ ");
+                builder.append('\\').append(entry.getValue()).append("/ ");
+            }
+        }
+        return builder.toString();
+    }
+
+    public static String accCode2StringPrettry(int access) {
+        StringBuilder builder = new StringBuilder();
+        Map<Integer, String> map = getAccCodeMap();
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if ((entry.getKey() & access) > 0) {
+                //此处如果使用|作为分隔符会导致编译报错 因此改用斜杠
+                builder.append(entry.getValue()).append(" ");
             }
         }
         return builder.toString();
@@ -383,5 +405,102 @@ public class Utils {
 
     public static boolean isKeyWord(String simpleName) {
         return keywords.contains(simpleName);
+    }
+
+    public static boolean isPublicStatic(Integer arg) {
+        int count = 0;
+        Map<Integer, String> map = getAccCodeMap();
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if ((entry.getKey() & arg) > 0) {
+                //此处如果使用|作为分隔符会导致编译报错 因此改用斜杠
+                String value = entry.getValue();
+                if (value.equals("ACC_PUBLIC")) {
+                    count++;
+                }
+                if (value.equals("ACC_STATIC")) {
+                    count++;
+                }
+            }
+        }
+        return count == 2;
+    }
+
+    public static String className2Path(String s) {
+        return s.replace('.', '/');
+    }
+
+    public static File unzipEntryToTemp(ZipEntry element, ZipFile zipFile) throws IOException {
+        InputStream stream = zipFile.getInputStream(element);
+        byte[] array = IOUtils.toByteArray(stream);
+        String hex = DigestUtils.md5Hex(element.getName());
+        final File tempDir = new File("/Users/bushaopeng/IdeaProjects/Jar2Java/build");
+        File targetFile = new File(tempDir, hex + ".jar");
+        if (targetFile.exists()) {
+            targetFile.delete();
+        }
+        new FileOutputStream(targetFile).write(array);
+        return targetFile;
+    }
+
+    public static void logProxy(Method method, Object[] args, Object returnedVal, int indent) {
+        StringBuilder builder = new StringBuilder();
+        String methodName = method.getName();
+        if (args != null && args.length > 0) {
+            int count = 0;
+            for (Object arg : args) {
+                if (arg != null) {
+
+                    if (methodName.endsWith("Insn") && count == 0) {
+                        if (arg instanceof Integer) {
+                            builder.append(Utils.getOpName((Integer) arg));
+                        } else {
+                            builder.append("->" + arg);
+                        }
+                    } else if ("visitMethod".equals(methodName) && count == 0 && arg instanceof Integer) {
+                        builder.append(Utils.accCode2String((Integer) arg));
+                    } else {
+                        builder.append(arg.toString());
+                    }
+                } else {
+                    builder.append("null");
+                }
+                builder.append("\t");
+                count++;
+            }
+            builder.setLength(builder.length() - 1);
+        }
+        if (returnedVal != null) {
+            builder.append(", 返回值：").append(returnedVal);
+        } else {
+            builder.append("，无返回值");
+        }
+        Utils.log((indent == 0 ? "" : "\t") + "调用：" + methodName + ", 参数: " + builder.toString());
+    }
+
+    public static boolean isPublic(int access) {
+        Map<Integer, String> map = getAccCodeMap();
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if ((entry.getKey() & access) > 0) {
+                //此处如果使用|作为分隔符会导致编译报错 因此改用斜杠
+                String value = entry.getValue();
+                if (value.equals("ACC_PUBLIC")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public static boolean isPrivate(int access) {
+        Map<Integer, String> map = getAccCodeMap();
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if ((entry.getKey() & access) > 0) {
+                //此处如果使用|作为分隔符会导致编译报错 因此改用斜杠
+                String value = entry.getValue();
+                if (value.equals("ACC_PRIVATE")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
