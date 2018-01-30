@@ -53,10 +53,11 @@ public class Main {
 //        }
 
 
-        extractAllSources();
+//        extractAllSources();
 //        filterJar();
 //        readAllConstant();
 //        modifyAar();
+        analyzeAar();
 //        Map<String, VisitedClass> visitedClassMap = jarAnalyzer.analyzeJar(args[0]);
 //        if (jarAnalyzer.extractSource(args[0])) {
 //            return;
@@ -119,6 +120,18 @@ public class Main {
         JarModifier jarModifier = new JarModifier();
         for (String arg : args) {
             jarModifier.modifyAar(arg);
+        }
+    }
+
+    private static void analyzeAar() {
+        String[] args;
+        args = new String[]{
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/classes2-dex2jar.jar"
+        };
+
+        JarAnalyzer jarAnalyzer = new JarAnalyzer();
+        for (String arg : args) {
+            jarAnalyzer.searchMethodInvoke(arg);
         }
     }
 

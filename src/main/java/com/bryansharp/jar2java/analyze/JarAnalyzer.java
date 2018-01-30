@@ -328,4 +328,9 @@ public class JarAnalyzer {
         }
         return null;
     }
+
+    public void searchMethodInvoke(String arg) {
+        MethodSearchAnalyzer analyzer = new MethodSearchAnalyzer();
+        analyzeAar(arg, analyzer);
+    }
 }
