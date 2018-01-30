@@ -433,7 +433,7 @@ public class Utils {
         InputStream stream = zipFile.getInputStream(element);
         byte[] array = IOUtils.toByteArray(stream);
         String hex = DigestUtils.md5Hex(element.getName());
-        final File tempDir = new File("/Users/bushaopeng/IdeaProjects/Jar2Java/build");
+        final File tempDir = new File(Main.getProjectPath() + "/build");
         File targetFile = new File(tempDir, hex + ".jar");
         if (targetFile.exists()) {
             targetFile.delete();
@@ -490,6 +490,7 @@ public class Utils {
         }
         return false;
     }
+
     public static boolean isPrivate(int access) {
         Map<Integer, String> map = getAccCodeMap();
         for (Map.Entry<Integer, String> entry : map.entrySet()) {

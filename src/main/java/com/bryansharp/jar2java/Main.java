@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -26,7 +28,7 @@ public class Main {
 //            return;
 //        }
 //        JavapJarParser jarParser = new JavapJarParser();
-//        if (jarParser.parse("/Users/bushaopeng/IdeaProjects/Jar2Java/classes.jar")) {
+//        if (jarParser.parse(getProjectPath() + "/classes.jar")) {
 //            return;
 //        }
 //        try {
@@ -51,10 +53,10 @@ public class Main {
 //        }
 
 
-//        extractAllSources();
+        extractAllSources();
 //        filterJar();
 //        readAllConstant();
-        modifyAar();
+//        modifyAar();
 //        Map<String, VisitedClass> visitedClassMap = jarAnalyzer.analyzeJar(args[0]);
 //        if (jarAnalyzer.extractSource(args[0])) {
 //            return;
@@ -90,18 +92,29 @@ public class Main {
 //        }
     }
 
+    public static String getProjectPath() {
+        try {
+            URL resource = Main.class.getClassLoader().getResource(".");
+            String proj = "Jar2Java";
+            return new File(resource.toURI()).getAbsolutePath().split(proj)[0] + proj;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     private static void modifyAar() {
         String[] args;
-//        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.2.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.1.1.4230.13.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.0.4230-adserverDebug.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.4.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.8.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.6.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.1.0.0.16.aar"
+//        args = new String[]{getProjectPath() + "/sdk-4.3.0.5.2.aar",
+//                getProjectPath() + "/sdk-4.3.0.5.aar",
+//                getProjectPath() + "/sdk-4.3.1.1.4230.13.aar",
+//                getProjectPath() + "/sdk-5.0.0.0.4230-adserverDebug.aar",
+//                getProjectPath() + "/sdk-5.0.0.4.aar",
+//                getProjectPath() + "/sdk-5.0.0.8.aar",
+//                getProjectPath() + "/sdk-5.0.0.6.aar",
+//                getProjectPath() + "/sdk-5.1.0.0.16.aar"
 //        };
-        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.8.aar"};
+        args = new String[]{getProjectPath() + "/sdk-5.0.0.8.aar"};
 
         JarModifier jarModifier = new JarModifier();
         for (String arg : args) {
@@ -112,7 +125,7 @@ public class Main {
     private static void filterJar() {
         String[] args;
         args = new String[]{
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/classes2-dex2jar.jar"
+                getProjectPath() + "/classes2-dex2jar.jar"
         };
 
         JarAnalyzer jarAnalyzer = new JarAnalyzer();
@@ -124,7 +137,7 @@ public class Main {
     private static void extractAllSources() {
         String[] args;
         args = new String[]{
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/classes2-dex2jar.jar"
+                getProjectPath() + "/sdk-5.0.0.8.aar"
         };
 
         JarAnalyzer jarAnalyzer = new JarAnalyzer();
@@ -135,15 +148,15 @@ public class Main {
 
     private static void readAllConstant() {
         String[] args;
-//        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.2.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.0.5.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-4.3.1.1.4230.13.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.0.4230-adserverDebug.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.4.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.6.aar",
-//                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.1.0.0.16.aar"
+//        args = new String[]{getProjectPath() + "/sdk-4.3.0.5.2.aar",
+//                getProjectPath() + "/sdk-4.3.0.5.aar",
+//                getProjectPath() + "/sdk-4.3.1.1.4230.13.aar",
+//                getProjectPath() + "/sdk-5.0.0.0.4230-adserverDebug.aar",
+//                getProjectPath() + "/sdk-5.0.0.4.aar",
+//                getProjectPath() + "/sdk-5.0.0.6.aar",
+//                getProjectPath() + "/sdk-5.1.0.0.16.aar"
 //        };
-        args = new String[]{"/Users/bushaopeng/IdeaProjects/Jar2Java/altamob-5.2.0.Q.jar"
+        args = new String[]{getProjectPath() + "/altamob-5.2.0.Q.jar"
         };
 
         JarAnalyzer jarAnalyzer = new JarAnalyzer();

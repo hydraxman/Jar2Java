@@ -8,6 +8,7 @@ import com.bryansharp.jar2java.analyze.entity.VisitedClass;
 import com.bryansharp.jar2java.analyze.entity.VisitedMethod;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,15 +54,6 @@ public class JarAnalyzer {
         return true;
     }
 
-    public boolean extractSource(String path) {
-        if (path.endsWith(".jar")) {
-            extractSourceFromJar(path);
-        } else if (path.endsWith(".aar")) {
-            extractSourceFromAar(path);
-        }
-        return true;
-    }
-
     private void extractSourceFromJar(String path) {
         try {
             initProjName(path, null);
@@ -72,8 +64,18 @@ public class JarAnalyzer {
         }
     }
 
+    public boolean extractSource(String path) {
+        if (path.endsWith(".jar")) {
+            extractSourceFromJar(path);
+        } else if (path.endsWith(".aar")) {
+            extractSourceFromAar(path);
+        }
+        return true;
+    }
+
     private void extractSourceFromAar(String path) {
         try {
+            initProjName(path, null);
             File file = new File(path);
             ZipFile zipFile = new ZipFile(file);
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -275,6 +277,9 @@ public class JarAnalyzer {
     }
 
     private void initProjName(String path, String suffix) {
+        if (StringUtils.isNotBlank(projName)) {
+            return;
+        }
         File file = new File(path);
         String name = file.getName();
         if (suffix == null) {
