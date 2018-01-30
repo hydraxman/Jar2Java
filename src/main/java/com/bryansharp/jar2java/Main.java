@@ -54,7 +54,8 @@ public class Main {
 //        extractAllSources();
 //        filterJar();
 //        readAllConstant();
-        modifyAar();
+//        modifyAar();
+        analyzeAar();
 //        Map<String, VisitedClass> visitedClassMap = jarAnalyzer.analyzeJar(args[0]);
 //        if (jarAnalyzer.extractSource(args[0])) {
 //            return;
@@ -109,6 +110,18 @@ public class Main {
         }
     }
 
+    private static void analyzeAar() {
+        String[] args;
+        args = new String[]{
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/classes2-dex2jar.jar"
+        };
+
+        JarAnalyzer jarAnalyzer = new JarAnalyzer();
+        for (String arg : args) {
+            jarAnalyzer.searchMethodInvoke(arg);
+        }
+    }
+
     private static void filterJar() {
         String[] args;
         args = new String[]{
@@ -124,7 +137,7 @@ public class Main {
     private static void extractAllSources() {
         String[] args;
         args = new String[]{
-                "/Users/bushaopeng/IdeaProjects/Jar2Java/classes2-dex2jar.jar"
+                "/Users/bushaopeng/IdeaProjects/Jar2Java/sdk-5.0.0.8.aar"
         };
 
         JarAnalyzer jarAnalyzer = new JarAnalyzer();

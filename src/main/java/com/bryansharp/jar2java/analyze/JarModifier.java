@@ -244,12 +244,12 @@ public class JarModifier {
         });
         ClassReader cr = new ClassReader(sourceClassBytes);
         cr.accept(adapter, 0);
-        Utils.log("className: " + className + "新类大小：" + classWriter.toByteArray().length);
+//        Utils.log("className: " + className + "新类大小：" + classWriter.toByteArray().length);
         return classWriter.toByteArray();
     }
 
     private int modifyOneClass(String className, Method method, Object[] args) {
-        if ("com.mobi.sdk.resetting".equals(className)) {
+        if ("com.mobi.sdk.procedure".equals(className)) {
             if ("visitMethod".equals(method.getName())) {
                 if ("<clinit>".equals(args[1])) {
                     logProxy(method, args, null, 0);
@@ -261,7 +261,7 @@ public class JarModifier {
                 }
             }
         }
-        if ("com.mobi.sdk.finally".equals(className)) {
+        if ("com.mobi.sdk.double".equals(className)) {
             if ("visitMethod".equals(method.getName())) {
                 if ("do".equals(args[1])) {
                     if (((String) args[2]).equals("([B)Ljava/lang/String;")) {
@@ -296,12 +296,12 @@ public class JarModifier {
 
             }
         }
-        if (searchInArgs(args, "Landroid/content/ContentResolver;")) {
-            Utils.log("searchInArgs -----> className: " + className);
-            logProxy(method, args, null, 1);
-            readCounter = 8;
-        }
-        if ("com.mobi.sdk.resetting".equals(className)) {
+//        if (searchInArgs(args, "Landroid/content/ContentResolver;")) {
+//            Utils.log("searchInArgs -----> className: " + className);
+//            logProxy(method, args, null, 1);
+//            readCounter = 8;
+//        }
+        if ("com.mobi.sdk.procedure".equals(className)) {
             if (shouldVisit == 1) {
                 logProxy(method, args, null, 1);
                 if ("visitInsn".equals(methodName)) {
